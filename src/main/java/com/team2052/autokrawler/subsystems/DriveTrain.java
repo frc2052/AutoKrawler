@@ -1,6 +1,7 @@
 package com.team2052.autokrawler.subsystems;
 
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team2052.autokrawler.Constants;
 
 public class DriveTrain {
@@ -10,10 +11,10 @@ public class DriveTrain {
     private DriveTrain() {}
     public static DriveTrain getInstance() { return singleDriveTrainInstance; }
 
-    private CANTalon leftMotorF = new CANTalon(Constants.DriveTain.kLeftFrontMotor);
-    private CANTalon leftMotorB = new CANTalon(Constants.DriveTain.kLeftBackMotor);
-    private CANTalon rightMotorF = new CANTalon(Constants.DriveTain.kRightFrontMotor);
-    private CANTalon rightMotorB = new CANTalon(Constants.DriveTain.kRightBackMotor);
+    private TalonSRX leftMotorF = new TalonSRX(Constants.DriveTain.kLeftFrontMotor);
+    private TalonSRX leftMotorB = new TalonSRX(Constants.DriveTain.kLeftBackMotor);
+    private TalonSRX rightMotorF = new TalonSRX(Constants.DriveTain.kRightFrontMotor);
+    private TalonSRX rightMotorB = new TalonSRX(Constants.DriveTain.kRightBackMotor);
 
     public enum DriveModeVariableType { //enum variable type declaration
         MECANUM,
@@ -65,10 +66,10 @@ public class DriveTrain {
 
 
         }
-        leftMotorF.set(frontLeftSpeed);
-        leftMotorB.set(backLeftSpeed);
-        rightMotorF.set(frontRightSpeed);
-        rightMotorB.set(backRightSpeed);
+        leftMotorF.set(ControlMode.PercentOutput, frontLeftSpeed);
+        leftMotorB.set(ControlMode.PercentOutput,backLeftSpeed);
+        rightMotorF.set(ControlMode.PercentOutput,frontRightSpeed);
+        rightMotorB.set(ControlMode.PercentOutput, backRightSpeed);
 
     }
 

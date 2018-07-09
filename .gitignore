@@ -1,9 +1,0 @@
-.gradle
-/bin/
-/dist/
-/build/
-*.iml
-*.ipr
-*.iws
-/.idea/
-

@@ -5,7 +5,6 @@ import com.team2052.autokrawler.auto.actions.Action;
 import edu.wpi.first.wpilibj.Timer;
 
 
-
 public abstract class AutoModeBase { //an abstract class cannot be run, only its subclasses
 
     private boolean running = false;
