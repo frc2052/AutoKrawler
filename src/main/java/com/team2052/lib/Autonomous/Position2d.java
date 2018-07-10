@@ -9,4 +9,9 @@ public class Position2d {
     public double heading; //degrees
 //    public double deltaDistance;
 
+    public void Reset(){
+        forward = 0;
+        lateral = 0;
+        heading = 0;
+    }
 }

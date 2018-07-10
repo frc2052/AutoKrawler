@@ -3,13 +3,19 @@ package com.team2052.lib.Autonomous;
 
 public class RobotState {
 
-    int pastLeftInches;
-    int pastRightInches;
+    static double pastLeftInches;
+    static double pastRightInches;
 
     private Position2d latestPosition = new Position2d();
 
+    private static RobotState singleRobotStateInstance = new RobotState();
+    public static RobotState getInstance() { return singleRobotStateInstance; }
+
+    public void Init(){
+        latestPosition.Reset();
+    }
     //send the change in position from the last point in inches and radians and add that to the previous position
-    public void estimatePosition (int leftInches, int rightInches, double radians) {
+    public void estimatePosition (double leftInches, double rightInches, double radians) {
 
         double deltaDistance = ((leftInches-pastLeftInches) + (rightInches-pastRightInches)) / 2;
         double averageHeading = (radians + latestPosition.heading) / 2;
@@ -20,6 +26,10 @@ public class RobotState {
         latestPosition.lateral = deltaDistance * Math.sin(averageHeading) + latestPosition.lateral;
         latestPosition.heading = radians;
 
+        System.out.println("forward" + latestPosition.forward);
+        System.out.println("lateral " + latestPosition.lateral);
+        System.out.println("radians" + latestPosition.heading);
+        System.out.println("degrees " + latestPosition.heading / 0.017453);
     }
 
 

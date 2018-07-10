@@ -6,17 +6,17 @@ public class Constants {
 
 
     public class Controls{
-        public static final int kToggleDriveTrainButton = 2;
-
-        public static final int kIntakeIntakeButton = 3;
-        public static final int kIntakeOutakeButton = 4;
     }
 
-    public class DriveTain{
-        public static final int kLeftFrontMotor = 1;
-        public static final int kLeftBackMotor = 2;
-        public static final int kRightFrontMotor = 3;
-        public static final int kRightBackMotor = 4;
+    public class DriveTrain{
+        public static final int kDriveLeftMasterId = 1;
+        public static final int kDriveLeftSlaveId = 2;
+        public static final int kDriveRightMasterId = 4;
+        public static final int kDriveRightSlaveId = 3;
+
+        public static final int kCANBusConfigTimeoutMS = 10;
+        public static final int kkTicksPerRot = 1024;
+        public static final double kDriveWheelDiameterInches = 6.0;
     }
 
 
