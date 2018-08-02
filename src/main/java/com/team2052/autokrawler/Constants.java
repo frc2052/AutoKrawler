@@ -15,7 +15,7 @@ public class Constants {
         public static final int kDriveRightSlaveId = 3;
 
         public static final int kCANBusConfigTimeoutMS = 10;
-        public static final int kkTicksPerRot = 1024;
+        public static final int kkTicksPerRot = 4096;
         public static final double kDriveWheelDiameterInches = 6.0;
     }
 

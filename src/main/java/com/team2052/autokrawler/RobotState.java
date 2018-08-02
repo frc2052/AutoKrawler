@@ -1,5 +1,7 @@
-package com.team2052.lib.Autonomous;
+package com.team2052.autokrawler;
 
+
+import com.team2052.lib.Autonomous.Position2d;
 
 public class RobotState {
 
@@ -15,7 +17,7 @@ public class RobotState {
         latestPosition.Reset();
     }
     //send the change in position from the last point in inches and radians and add that to the previous position
-    public void estimatePosition (double leftInches, double rightInches, double radians) {
+    public void estimatePositionAverageHeading(double leftInches, double rightInches, double radians) {
 
         double deltaDistance = ((leftInches-pastLeftInches) + (rightInches-pastRightInches)) / 2;
         double averageHeading = (radians + latestPosition.heading) / 2;
@@ -32,8 +34,29 @@ public class RobotState {
         System.out.println("degrees " + latestPosition.heading / 0.017453);
     }
 
+    public void estimatePositionWithEncoders(double leftInches, double rightInches){
+
+    }
+
 
     public Position2d getLatestPosition(){
         return latestPosition;
     }
+
+    public static Position2d forwardKinematics(double left_wheel_delta, double right_wheel_delta,
+                                            double delta_rotation_rads) {
+        final double dx = (left_wheel_delta + right_wheel_delta) / 2.0;
+        return new Position2d(0.0, 0.0, 0.0);
+    }
+
+    /**
+     * For convenience, forward kinematic with an absolute rotation and previous rotation.
+     */
+    public static Position2d integrateForwardKinematics(Position2d current_pose,
+                                                              Position2d forward_kinematics) {
+        return current_pose.transformBy(RigidTransform2d.exp(forward_kinematics));
+    }
 }
+
+
+
