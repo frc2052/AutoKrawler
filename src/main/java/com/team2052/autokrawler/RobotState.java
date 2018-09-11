@@ -28,7 +28,7 @@ public class RobotState {
         latestPosition.lateral = deltaDistance * Math.sin(averageHeading) + latestPosition.lateral;
         latestPosition.heading = radians;
 
-        System.out.println("forward" + latestPosition.forward);
+        System.out.println("forward" + latestPosition.forward + "encoderInch: " + rightInches);
         System.out.println("lateral " + latestPosition.lateral);
         System.out.println("radians" + latestPosition.heading);
         System.out.println("degrees " + latestPosition.heading / 0.017453);
@@ -54,7 +54,8 @@ public class RobotState {
      */
     public static Position2d integrateForwardKinematics(Position2d current_pose,
                                                               Position2d forward_kinematics) {
-        return current_pose.transformBy(RigidTransform2d.exp(forward_kinematics));
+        //return current_pose.transformBy(Position2d.exp(forward_kinematics));
+        return null;
     }
 }
 

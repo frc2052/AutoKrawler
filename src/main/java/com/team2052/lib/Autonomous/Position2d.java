@@ -24,6 +24,12 @@ public class Position2d {
         this.lateral = lateral;
     }
 
+    public Position2d(){
+        forward = 0.0;
+        lateral = 0.0;
+        heading = 0.0;
+    }
+
 
 
 
@@ -42,8 +48,9 @@ public class Position2d {
      * @return This transform * other
      */
     public Position2d transformBy(Position2d other) {
-        return new Position2d(translation_.translateBy(other.translation_.rotateBy(rotation_)),
-                rotation_.rotateBy(other.rotation_));
+//        return new Position2d(translation_.translateBy(other.translation_.rotateBy(rotation_)),
+//                rotation_.rotateBy(other.rotation_));
+        return null;
     }
 
     /**
@@ -52,8 +59,9 @@ public class Position2d {
      * @return The opposite of this transform.
      */
     public Position2d inverse() {
-        Position2d rotation_inverted = rotation_.inverse();
-        return new Position2d(translation_.inverse().rotateBy(rotation_inverted), rotation_inverted);
+//        Position2d rotation_inverted = rotation_.inverse();
+//        return new Position2d(translation_.inverse().rotateBy(rotation_inverted), rotation_inverted);
+        return null;
     }
 
     /**
@@ -63,9 +71,9 @@ public class Position2d {
      *            The other translation to add.
      * @return The combined effect of translating by this object and the other.
      */
-    public Position2d translateBy(Position2d other) {
-        return new Position2d(x_ + other.x_, y_ + other.y_);
-    }
+//    public Position2d translateBy(Position2d other) {
+//        return new Position2d(x_ + other.x_, y_ + other.y_);
+//    }
 
     /**
      * We can also rotate Translation2d's. See: https://en.wikipedia.org/wiki/Rotation_matrix

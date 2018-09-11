@@ -39,13 +39,13 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        driveTrain.drive(controls.getTankJoy1() , controls.getTurnJoy2());
+        driveTrain.drive(controls.getTankJoy1() , controls.getTurnJoy1());
 
         if(controls.reset()){
             driveTrain.zeroGyro();
             robotstate.Init();
         }
-        robotstate.estimatePositionAverageHeading((driveTrain.getLeftEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelDiameterInches, (driveTrain.getRightEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelDiameterInches, driveTrain.getGyroAngleDegrees()*0.017453);
+        robotstate.estimatePositionAverageHeading((driveTrain.getLeftEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches, (driveTrain.getRightEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches, driveTrain.getGyroAngleDegrees()*0.017453);
 
     }
 
