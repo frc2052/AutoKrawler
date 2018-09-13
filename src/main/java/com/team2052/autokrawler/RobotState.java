@@ -8,7 +8,7 @@ public class RobotState {
     static double pastLeftInches;
     static double pastRightInches;
 
-    private Position2d latestPosition = new Position2d();
+    private static Position2d latestPosition = new Position2d();
 
     private static RobotState singleRobotStateInstance = new RobotState();
     public static RobotState getInstance() { return singleRobotStateInstance; }
@@ -39,7 +39,7 @@ public class RobotState {
     }
 
 
-    public Position2d getLatestPosition(){
+    public static Position2d getLatestPosition(){
         return latestPosition;
     }
 

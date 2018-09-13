@@ -1,7 +1,9 @@
 package com.team2052.autokrawler;
 
 
+import com.team2052.autokrawler.auto.PathFollower;
 import com.team2052.autokrawler.subsystems.DriveTrain;
+import com.team2052.lib.Autonomous.Position2d;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 public class Robot extends IterativeRobot {
@@ -9,6 +11,7 @@ public class Robot extends IterativeRobot {
     private static DriveTrain driveTrain = DriveTrain.getInstance();
     private static Controls controls = Controls.getInstance();
     private static RobotState robotstate = RobotState.getInstance();
+    private static PathFollower pathFollower = PathFollower.getInstance();
 
     @Override
     public void robotInit() {
@@ -19,12 +22,17 @@ public class Robot extends IterativeRobot {
     public void disabledInit() { }
 
     @Override
-    public void autonomousInit() { }
+    public void autonomousInit() {
+        driveTrain.zeroGyro();
+        robotstate.Init();
+        pathFollower.simpleFollower(new Position2d(36,36,0.0));
+    }
 
     @Override
     public void teleopInit() {
         driveTrain.zeroGyro();
         robotstate.Init();
+
     }
 
     @Override
@@ -35,7 +43,11 @@ public class Robot extends IterativeRobot {
     public void disabledPeriodic() { }
     
     @Override
-    public void autonomousPeriodic() { }
+    public void autonomousPeriodic() {
+        if (pathFollower.update()){
+            System.out.println("REACHED POINT");
+        }
+    }
 
     @Override
     public void teleopPeriodic() {

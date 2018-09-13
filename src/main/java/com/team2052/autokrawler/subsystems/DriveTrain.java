@@ -82,6 +82,11 @@ public class DriveTrain {
 
     }
 
+    public void driveTank(double left, double right){
+        leftMaster.set(ControlMode.PercentOutput, left);
+        rightMaster.set(ControlMode.PercentOutput, right);
+    }
+
     private double checkbounds(double Speed){ //this checks to make sure the speed is between 1 & -1
         if (Speed > 1){
             return 1.0;
