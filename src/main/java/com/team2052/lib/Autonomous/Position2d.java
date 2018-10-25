@@ -15,14 +15,16 @@ public class Position2d {
         this.heading = heading;
     }
 
-    public Position2d(double heading){
-        this.heading = heading;
-    }
-
     public Position2d(double forward, double lateral){
         this.forward = forward;
         this.lateral = lateral;
     }
+
+    public Position2d(double heading){
+        this.heading = heading;
+    }
+
+
 
     public Position2d(){
         forward = 0.0;
@@ -31,14 +33,15 @@ public class Position2d {
     }
 
 
-
-
     public void Reset(){
         forward = 0;
         lateral = 0;
         heading = 0;
     }
 
+    public double getHype(){
+        return Math.sqrt(forward * forward + lateral * lateral);
+    }
     /**
      * Transforming this RigidTransform2d means first translating by other.translation and then rotating by
      * other.rotation
@@ -64,16 +67,6 @@ public class Position2d {
         return null;
     }
 
-    /**
-     * We can compose Translation2d's by adding together the x and y shifts.
-     *
-     * @param other
-     *            The other translation to add.
-     * @return The combined effect of translating by this object and the other.
-     */
-//    public Position2d translateBy(Position2d other) {
-//        return new Position2d(x_ + other.x_, y_ + other.y_);
-//    }
 
     /**
      * We can also rotate Translation2d's. See: https://en.wikipedia.org/wiki/Rotation_matrix
@@ -86,11 +79,19 @@ public class Position2d {
         return new Position2d(forward * rotation.cos() - lateral * rotation.sin(), forward* rotation.sin() + lateral * rotation.cos());
     }
 
+    public Position2d translateBy(Position2d other){
+        return new Position2d(this.forward + other.forward, this.lateral + other.lateral);
+    }
+
     public double cos(){
         return Math.cos(heading);
     }
 
     public double sin(){
-        return Math.sin(heading);
+        return Math.sin(heading);}
+
+
+    public void setAngleFromTrig(){
+        heading = Math.atan(forward/lateral);
     }
 }
