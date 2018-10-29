@@ -20,7 +20,11 @@ public class Constants {
     }
 
 
-    public class AutoMode{
-        public static final long ActionLoopTime = (long) (1.0 /50.0 * 1000); //the parenthese "cast"/change the double to a long
+    public class Autonomous{
+        public static final long ActionLoopTime = (long) (20); //   1/50 *1000 = 20   ...
+        public static final double turnSpeed = 3.0; //constant from 1-5     higher = faster
+
+        public static final double maxAccel = 12.0;///TESTTTTTT
+
     }
 }

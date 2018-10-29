@@ -8,14 +8,17 @@ public class Waypoint {
     public Position2d position;
     public double velocity;
     public double curvature;
+    public double distance;
 
     /**
-     *
      * @param position in inches
      * @param velocity in inches per second
      */
-    public Waypoint(Position2d position, double velocity){
+    public Waypoint(Position2d position, double velocity) {
         this.position = position;
         this.velocity = velocity;
+        distance = 0;
+        curvature = 0;
     }
 }
+

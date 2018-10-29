@@ -16,7 +16,7 @@ public class AutoModeRunner {
                autoMode.start();
             }
         }; */
-        automode.start();
+        //automode.start(); //todo why was this uncommented
     }
 
     public void setAutomode(AutoModeBase automode){ //sets this classes automode and prints the name to the console
