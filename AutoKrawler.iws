@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="345a5d21-19d9-44a9-b5ec-05ef6dcb0376" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/AutoKrawler.iml" afterPath="$PROJECT_DIR$/AutoKrawler.iml" />
-      <change beforePath="$PROJECT_DIR$/AutoKrawler.ipr" afterPath="$PROJECT_DIR$/AutoKrawler.ipr" />
+    <list default="true" id="345a5d21-19d9-44a9-b5ec-05ef6dcb0376" name="Default" comment="implemented setting up velocities on a path">
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/PathCreator.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/RateLimiter.java" />
       <change beforePath="$PROJECT_DIR$/AutoKrawler.iws" afterPath="$PROJECT_DIR$/AutoKrawler.iws" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Constants.java" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Constants.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoMode.java" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoMode.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoModeBase.java" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoModeBase.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoModeRunner.java" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoModeRunner.java" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Robot.java" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Robot.java" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/PathFollower.java" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/PathFollower.java" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Path.java" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Path.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Waypoint.java" afterPath="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Waypoint.java" />
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -75,11 +72,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="Path.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Path.java">
+      <file leaf-file-name="Robot.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Robot.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="579">
-              <caret line="89" column="225" lean-forward="false" selection-start-line="89" selection-start-column="225" selection-end-line="89" selection-end-column="225" />
+            <state relative-caret-position="137">
+              <caret line="34" column="5" lean-forward="true" selection-start-line="34" selection-start-column="5" selection-end-line="34" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -87,22 +84,46 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AutoModeRunner.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoModeRunner.java">
+      <file leaf-file-name="RateLimiter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/RateLimiter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+            <state relative-caret-position="187">
+              <caret line="11" column="9" lean-forward="true" selection-start-line="11" selection-start-column="9" selection-end-line="11" selection-end-column="9" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AutoMode.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoMode.java">
+      <file leaf-file-name="PathFollower.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/PathFollower.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+            <state relative-caret-position="221">
+              <caret line="18" column="22" lean-forward="true" selection-start-line="18" selection-start-column="22" selection-end-line="18" selection-end-column="22" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Path.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Path.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PathCreator.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/PathCreator.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="31" column="0" lean-forward="true" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -117,11 +138,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Position2dMath.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Position2dMath.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Position2dMath.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" column="94" lean-forward="true" selection-start-line="12" selection-start-column="94" selection-end-line="12" selection-end-column="94" />
+            <state relative-caret-position="255">
+              <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -137,31 +158,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AutoModeBase.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoModeBase.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="23" column="55" lean-forward="false" selection-start-line="23" selection-start-column="55" selection-end-line="23" selection-end-column="55" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="WaitAction.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/actions/WaitAction.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="119">
               <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Action.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/actions/Action.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -197,6 +198,11 @@
     </replaceStrings>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Ian" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleLocalSettings">
@@ -640,14 +646,17 @@
         <option value="$PROJECT_DIR$/src/main/java/frc/team2052/autokrawler/subsystems/DriveTrain.java" />
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/subsystems/DriveTrain.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Robot.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Waypoint.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Position2dMath.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Constants.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Path.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoModeRunner.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoModeBase.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/AutoMode.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/RateLimiter.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Path.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/PathCreator.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/PathFollower.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Robot.java" />
       </list>
     </option>
   </component>
@@ -1030,6 +1039,14 @@
       <option name="presentableId" value="Default" />
       <updated>1530578180668</updated>
     </task>
+    <task id="LOCAL-00001" summary="implemented setting up velocities on a path">
+      <created>1540790818912</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1540790818912</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1071,6 +1088,8 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="implemented setting up velocities on a path" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented setting up velocities on a path" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -1249,14 +1268,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/RobotState.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/PathFollower.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="16" column="22" lean-forward="false" selection-start-line="16" selection-start-column="22" selection-end-line="16" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Waypoint.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
@@ -1270,26 +1281,6 @@
         <state relative-caret-position="-19">
           <caret line="13" column="13" lean-forward="false" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Robot.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="32" column="65" lean-forward="true" selection-start-line="32" selection-start-column="65" selection-end-line="32" selection-end-column="65" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Path.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="579">
-          <caret line="89" column="225" lean-forward="false" selection-start-line="89" selection-start-column="225" selection-end-line="89" selection-end-column="225" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1361,9 +1352,55 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Position2dMath.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="94" lean-forward="true" selection-start-line="12" selection-start-column="94" selection-end-line="12" selection-end-column="94" />
+        <state relative-caret-position="255">
+          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/RateLimiter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="9" lean-forward="true" selection-start-line="11" selection-start-column="9" selection-end-line="11" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/PathCreator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="31" column="0" lean-forward="true" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/lib/Autonomous/Path.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/auto/PathFollower.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="18" column="22" lean-forward="true" selection-start-line="18" selection-start-column="22" selection-end-line="18" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/team2052/autokrawler/Robot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="137">
+          <caret line="34" column="5" lean-forward="true" selection-start-line="34" selection-start-column="5" selection-end-line="34" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
