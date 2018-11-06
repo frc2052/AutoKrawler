@@ -8,7 +8,7 @@ public class RobotState {
     static double pastLeftInches;
     static double pastRightInches;
 
-    private static Position2d latestPosition = new Position2d();
+    private Position2d latestPosition = new Position2d();
 
     private static RobotState singleRobotStateInstance = new RobotState();
     public static RobotState getInstance() { return singleRobotStateInstance; }
@@ -39,11 +39,11 @@ public class RobotState {
     }
 
 
-    public static Position2d getLatestPosition(){
+    public Position2d getLatestPosition(){
         return latestPosition;
     }
 
-    public static Position2d forwardKinematics(double left_wheel_delta, double right_wheel_delta,
+    public Position2d forwardKinematics(double left_wheel_delta, double right_wheel_delta,
                                             double delta_rotation_rads) {
         final double dx = (left_wheel_delta + right_wheel_delta) / 2.0;
         return new Position2d(0.0, 0.0, 0.0);
@@ -52,7 +52,7 @@ public class RobotState {
     /**
      * For convenience, forward kinematic with an absolute rotation and previous rotation.
      */
-    public static Position2d integrateForwardKinematics(Position2d current_pose,
+    public Position2d integrateForwardKinematics(Position2d current_pose,
                                                               Position2d forward_kinematics) {
         //return current_pose.transformBy(Position2d.exp(forward_kinematics));
         return null;

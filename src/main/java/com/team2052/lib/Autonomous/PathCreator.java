@@ -19,7 +19,7 @@ public class PathCreator {
      *
      * 3 calcualte curvature at each point
      */
-    public void createPath(List<Waypoint> waypoints){
+    public List<Waypoint> createPath(List<Waypoint> waypoints){
 
         List<Waypoint> pathPoints = null;
         //create more points
@@ -40,7 +40,7 @@ public class PathCreator {
 
         //set distances
         for(int i = 1; i < pathPoints.size(); i++){
-            double segmentDistance = distanceFormula(pathPoints.get(i-1).position,pathPoints.get(i).position);
+            double segmentDistance = Position2d.distanceFormula(pathPoints.get(i-1).position,pathPoints.get(i).position);
             pathPoints.get(i).distance = pathPoints.get(i-1).distance + segmentDistance;
         }
 
@@ -74,14 +74,12 @@ public class PathCreator {
         pathPoints.get(pathPoints.size()-1).velocity = 0;
 
         for (int i = 2; i < pathPoints.size()+1; i++){
-            double d = distanceFormula(pathPoints.get(pathPoints.size()-i+1).position,pathPoints.get(pathPoints.size()-i).position);
+            double d = Position2d.distanceFormula(pathPoints.get(pathPoints.size()-i+1).position,pathPoints.get(pathPoints.size()-i).position);
             pathPoints.get(pathPoints.size()-i).velocity = Math.min(pathPoints.get(pathPoints.size()-i).velocity, Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).velocity,2) + 2 * Constants.Autonomous.maxAccel * d));
         }
-
+        return pathPoints;
     }
 
 
-    private double distanceFormula(Position2d first, Position2d second){
-        return Math.sqrt(Math.pow(second.lateral - first.lateral,2) + Math.pow(second.forward - first.forward,2));
-    }
+
 }

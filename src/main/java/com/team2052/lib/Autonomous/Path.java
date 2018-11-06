@@ -1,8 +1,5 @@
 package com.team2052.lib.Autonomous;
 
-import com.team2052.autokrawler.Constants;
-import edu.wpi.first.wpilibj.drive.Vector2d;
-
 import java.util.List;
 
 /**
@@ -13,11 +10,24 @@ public class Path {
 
     protected List<Waypoint> waypoints;
 
+
+
+    public Path(){
+
+    }
+
+    public Path(List<Waypoint> PathPoints){
+        waypoints = PathPoints;
+    }
     /**
      *
      * @param waypoint
      */
     public void addWaypoint(Waypoint waypoint){
         waypoints.add(waypoints.size(),waypoint);
+    }
+
+    public List<Waypoint> getWaypoints(){
+        return waypoints;
     }
 }

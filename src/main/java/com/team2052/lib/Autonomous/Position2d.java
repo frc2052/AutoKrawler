@@ -94,4 +94,8 @@ public class Position2d {
     public void setAngleFromTrig(){
         heading = Math.atan(forward/lateral);
     }
+
+    public static double distanceFormula(Position2d first, Position2d second){
+        return Math.sqrt(Math.pow(second.lateral - first.lateral,2) + Math.pow(second.forward - first.forward,2));
+    }
 }

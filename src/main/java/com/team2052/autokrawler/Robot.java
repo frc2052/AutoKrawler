@@ -1,7 +1,7 @@
 package com.team2052.autokrawler;
 
 
-import com.team2052.autokrawler.auto.PathFollower;
+import com.team2052.autokrawler.auto.PurePursuitPathFollower;
 import com.team2052.autokrawler.subsystems.DriveTrain;
 import com.team2052.lib.Autonomous.Path;
 import com.team2052.lib.Autonomous.Position2d;
@@ -13,7 +13,7 @@ public class Robot extends IterativeRobot {
     private static DriveTrain driveTrain = DriveTrain.getInstance();
     private static Controls controls = Controls.getInstance();
     private static RobotState robotstate = RobotState.getInstance();
-    private static PathFollower pathFollower = PathFollower.getInstance();
+    private static PurePursuitPathFollower purePursuitPathFollower = PurePursuitPathFollower.getInstance();
 
     private Path testPath;
 
@@ -31,7 +31,7 @@ public class Robot extends IterativeRobot {
         robotstate.Init();
         testPath.addWaypoint(new Waypoint(new Position2d(0,0), 5));
         testPath.addWaypoint(new Waypoint(new Position2d(30,30), 5));
-        pathFollower.setPath(testPath);
+        purePursuitPathFollower.setPath(testPath);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class Robot extends IterativeRobot {
     
     @Override
     public void autonomousPeriodic() {
-        pathFollower.update();
+        purePursuitPathFollower.update();
     }
 
     @Override
