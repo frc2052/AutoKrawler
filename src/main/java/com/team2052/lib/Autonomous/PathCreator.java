@@ -67,7 +67,7 @@ public class PathCreator {
                 pathPoints.get(i).curvature = 1 / r;
             }
 
-            pathPoints.get(i).velocity = Math.min(Constants.Autonomous.turnSpeed/r, pathPoints.get(i).velocity);
+            pathPoints.get(i).velocity = Math.min(Constants.Autonomous.kturnSpeed /r, pathPoints.get(i).velocity);
         }
 
         //use kinematics to go backward through the path to calculate deceleration and set velocity accordingly
@@ -75,7 +75,7 @@ public class PathCreator {
 
         for (int i = 2; i < pathPoints.size()+1; i++){
             double d = Position2d.distanceFormula(pathPoints.get(pathPoints.size()-i+1).position,pathPoints.get(pathPoints.size()-i).position);
-            pathPoints.get(pathPoints.size()-i).velocity = Math.min(pathPoints.get(pathPoints.size()-i).velocity, Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).velocity,2) + 2 * Constants.Autonomous.maxAccel * d));
+            pathPoints.get(pathPoints.size()-i).velocity = Math.min(pathPoints.get(pathPoints.size()-i).velocity, Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).velocity,2) + 2 * Constants.Autonomous.kMaxAccel * d));
         }
         return pathPoints;
     }

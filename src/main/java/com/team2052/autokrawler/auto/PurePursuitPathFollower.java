@@ -1,18 +1,19 @@
 package com.team2052.autokrawler.auto;
 
+import com.team2052.autokrawler.Constants;
 import com.team2052.autokrawler.RobotState;
 import com.team2052.autokrawler.subsystems.DriveTrain;
 import com.team2052.lib.Autonomous.Path;
 import com.team2052.lib.Autonomous.PathCreator;
 import com.team2052.lib.Autonomous.Position2d;
 import com.team2052.lib.Autonomous.RateLimiter;
+import com.team2052.lib.ILoopable;
 import edu.wpi.first.wpilibj.drive.Vector2d;
-import org.opencv.core.Mat;
 
 /**
  * Created by KnightKrawler on 9/12/2018.
  */
-public class PurePursuitPathFollower {
+public class PurePursuitPathFollower implements ILoopable{
 
     private static PurePursuitPathFollower instance = new PurePursuitPathFollower();
     private PurePursuitPathFollower() {}
@@ -27,22 +28,18 @@ public class PurePursuitPathFollower {
     private DriveTrain driveTrain = DriveTrain.getInstance();
     private RobotState robotState = RobotState.getInstance();
 
-    private int closestPointIndex = 0;
+    private int closestPointIndex;
     private Position2d lookaheadPoint;
     private Position2d currentPos;
 
     private double curvature;
 
-    private double lookaheadDistance = 12; //12-25
-    private double trackWidth = 10;
-    private double kv;
-    private double ka;
-    private double kp;
-
     public void setPath(Path path){
         this.path = new Path(pathCreator.createPath(path.getWaypoints()));
     }
 
+
+    @Override
     public void update() {
         currentPos = robotState.getLatestPosition();
         checkDistances();
@@ -51,12 +48,22 @@ public class PurePursuitPathFollower {
         driveWheels();
     }
 
+    @Override
+    public void onStart() {
+        resetPathFollower();
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
     /**
-     *
+     * find the point on the path that is the closest to the robot.
      */
     private void checkDistances(){
         double distance;
-        double closestDistance = 1000;//todo: find better way
+        double closestDistance = Position2d.distanceFormula(path.getWaypoints().get(closestPointIndex).position, currentPos);
 
         for(int i = closestPointIndex; i < path.getWaypoints().size(); i++){
             distance = Position2d.distanceFormula(path.getWaypoints().get(i).position, currentPos);
@@ -70,6 +77,9 @@ public class PurePursuitPathFollower {
 
     }
 
+    /**
+     * find a point that is both intersecting a circle radius kLookaheadDistance on the robot and the path
+     */
     private void findLookAheadPoint(){
 
         int i;
@@ -85,7 +95,7 @@ public class PurePursuitPathFollower {
 
             double a = dotProduct(lineSegment.x,lineSegment.x,lineSegment.y,lineSegment.y);
             double b = 2 * dotProduct(robotToStartPoint.x,lineSegment.x,robotToStartPoint.y,lineSegment.y);
-            double c = dotProduct(robotToStartPoint.x,robotToStartPoint.x,robotToStartPoint.y,robotToStartPoint.y) - lookaheadDistance* lookaheadDistance;
+            double c = dotProduct(robotToStartPoint.x,robotToStartPoint.x,robotToStartPoint.y,robotToStartPoint.y) - Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance;
             double discriminent = b*b - 4*a*c;
 
             if (discriminent < 0){
@@ -111,6 +121,9 @@ public class PurePursuitPathFollower {
         }
     }
 
+    /**
+     * find the curvature of the circle that the robot must follow to get to the look ahead point
+     */
     private void findCurvature(){
 
         double a = -Math.tan(currentPos.heading);
@@ -122,26 +135,39 @@ public class PurePursuitPathFollower {
 
         double side = Math.signum(Math.sin(currentPos.heading) * (lookaheadPoint.lateral - currentPos.lateral) - Math.cos(currentPos.heading) * (lookaheadPoint.forward - currentPos.forward));
 
-        curvature = side * ((2*x)/ (lookaheadDistance * lookaheadDistance));
+        curvature = side * ((2*x)/ (Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance));
 
     }
 
+    /**
+     * calculate the velocit in percent of the left and right wheels
+     */
     private void driveWheels(){
-        double velocity = path.getWaypoints().get(closestPointIndex).velocity;   //todo: add rate limiter
-        double leftWheelVel = velocity * (2 + curvature * trackWidth)/2;
-        double rightWheelVel = velocity * (2 - curvature * trackWidth)/2;
-        double angularVelocity;
-        double leftFeedForward = kv * leftWheelVel + ka /*  * targetAccel */ ;
-        double rightFeedForward = kv * rightWheelVel + ka /* * targetAccel */ ;
-        double leftFeedBack = kp * (leftWheelVel /* measured veloocity*/);
-        double rightFeedBack = kp * (rightWheelVel /* measured veloocity*/);
+        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInches(), -Constants.Autonomous.kMaxAccel, Constants.Autonomous.kMaxAccel);
+        double velocity = robotState.getVelocityInches() +  deltaVelocity;
+        double leftWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
+        double rightWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
+
+        double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity ;
+        double rightFeedForward = Constants.Autonomous.kV * rightWheelVel + Constants.Autonomous.kA * deltaVelocity ;
+        double leftFeedBack = Constants.Autonomous.kP * (leftWheelVel - robotState.getLeftVelocityInch());
+        double rightFeedBack = Constants.Autonomous.kP * (rightWheelVel - robotState.getRightVelocityInch());
 
         double leftSpeed = leftFeedForward + leftFeedBack;
         double rightSpeed = rightFeedForward + rightFeedBack;
+
         driveTrain.driveTank(leftSpeed, rightSpeed);
     }
 
     public double dotProduct(double x1, double y1, double x2, double y2){
         return x1 * x2 + y1 * y2;
+    }
+
+    public boolean isPathComplete(){
+        return false;
+    }
+
+    public void resetPathFollower(){
+        closestPointIndex = 0;
     }
 }

@@ -1,43 +1,58 @@
 package com.team2052.autokrawler;
 
 
+import com.team2052.autokrawler.auto.AutoModeRunner;
+import com.team2052.autokrawler.auto.AutoModeSelector;
 import com.team2052.autokrawler.auto.PurePursuitPathFollower;
 import com.team2052.autokrawler.subsystems.DriveTrain;
 import com.team2052.lib.Autonomous.Path;
 import com.team2052.lib.Autonomous.Position2d;
 import com.team2052.lib.Autonomous.Waypoint;
+import com.team2052.lib.ControlLoop;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 public class Robot extends IterativeRobot {
 
-    private static DriveTrain driveTrain = DriveTrain.getInstance();
-    private static Controls controls = Controls.getInstance();
-    private static RobotState robotstate = RobotState.getInstance();
-    private static PurePursuitPathFollower purePursuitPathFollower = PurePursuitPathFollower.getInstance();
+    private DriveTrain driveTrain = DriveTrain.getInstance();
+    private Controls controls = Controls.getInstance();
+    private RobotState robotstate = RobotState.getInstance();
+    private PurePursuitPathFollower purePursuitPathFollower = PurePursuitPathFollower.getInstance();
+    private AutoModeRunner autoModeRunner = new AutoModeRunner();
+    private ControlLoop controlLoop = new ControlLoop(Constants.Autonomous.kloopPeriod);
+
 
     private Path testPath;
 
     @Override
     public void robotInit() {
+        controlLoop.addLoopable(robotstate);
 
+        AutoModeSelector.putToSmartDashboard();
     }
 
     @Override
-    public void disabledInit() { }
+    public void disabledInit() {
+        autoModeRunner.stop();
+        controlLoop.stop();
+        driveTrain.driveTank(0,0);
+    }
 
     @Override
     public void autonomousInit() {
         driveTrain.zeroGyro();
         robotstate.Init();
-        testPath.addWaypoint(new Waypoint(new Position2d(0,0), 5));
-        testPath.addWaypoint(new Waypoint(new Position2d(30,30), 5));
-        purePursuitPathFollower.setPath(testPath);
+        AutoModeSelector.AutoModeDefinition currentAutoMode = AutoModeSelector.getAutoDefinition();
+        autoModeRunner.setAutomode(currentAutoMode.getInstance());
+        autoModeRunner.start();
+
+
     }
 
     @Override
     public void teleopInit() {
         driveTrain.zeroGyro();
         robotstate.Init();
+
 
     }
 
@@ -61,7 +76,6 @@ public class Robot extends IterativeRobot {
             driveTrain.zeroGyro();
             robotstate.Init();
         }
-        robotstate.estimatePositionAverageHeading((driveTrain.getLeftEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches, (driveTrain.getRightEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches, driveTrain.getGyroAngleDegrees()*0.017453);
     }
 
     @Override

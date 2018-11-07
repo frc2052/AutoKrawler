@@ -21,7 +21,7 @@ public abstract class AutoModeBase { //an abstract class cannot be run, only its
         while (!action.isFinished() && running){ //while the action is not done and the automode is running
             action.update();
             try { //can throw an exception so you must check if it does so code doesn't crash
-                Thread.sleep(Constants.Autonomous.ActionLoopTime);
+                Thread.sleep(Constants.Autonomous.kActionLoopTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

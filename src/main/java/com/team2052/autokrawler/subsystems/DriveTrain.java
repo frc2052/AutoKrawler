@@ -137,5 +137,16 @@ public class DriveTrain {
             return 0;
         }
     }
+
+    public double getGyroAngleRadians() {
+        if (navXGyro != null)
+        {
+            return navXGyro.getAngle() * 0.017453; //NOTE: getAngle tracks all rotations from init, so it can go beyond 2PI and -2PI
+        } else {
+            System.out.println("DANGER: NO GYRO!!!!");
+            return 0;
+        }
+    }
+
 }
 

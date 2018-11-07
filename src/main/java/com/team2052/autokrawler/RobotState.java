@@ -1,14 +1,22 @@
 package com.team2052.autokrawler;
 
 
+import com.team2052.autokrawler.subsystems.DriveTrain;
 import com.team2052.lib.Autonomous.Position2d;
+import com.team2052.lib.ILoopable;
 
-public class RobotState {
+public class RobotState implements ILoopable{
 
     static double pastLeftInches;
     static double pastRightInches;
+    private double deltaDistance;
+
+    private double deltaLeftInches;
+    private double deltaRightInches;
 
     private Position2d latestPosition = new Position2d();
+
+    private DriveTrain driveTrain = DriveTrain.getInstance();
 
     private static RobotState singleRobotStateInstance = new RobotState();
     public static RobotState getInstance() { return singleRobotStateInstance; }
@@ -19,7 +27,9 @@ public class RobotState {
     //send the change in position from the last point in inches and radians and add that to the previous position
     public void estimatePositionAverageHeading(double leftInches, double rightInches, double radians) {
 
-        double deltaDistance = ((leftInches-pastLeftInches) + (rightInches-pastRightInches)) / 2;
+        deltaLeftInches = leftInches-pastLeftInches;
+        deltaRightInches = rightInches-pastRightInches;
+        deltaDistance = ((deltaLeftInches) + (deltaRightInches)) / 2;
         double averageHeading = (radians + latestPosition.heading) / 2;
         pastRightInches = rightInches;
         pastLeftInches = leftInches;
@@ -43,11 +53,18 @@ public class RobotState {
         return latestPosition;
     }
 
-    public Position2d forwardKinematics(double left_wheel_delta, double right_wheel_delta,
-                                            double delta_rotation_rads) {
-        final double dx = (left_wheel_delta + right_wheel_delta) / 2.0;
-        return new Position2d(0.0, 0.0, 0.0);
+    public double getVelocityInches(){
+        return deltaDistance/Constants.Autonomous.kloopPeriod;
     }
+
+    public double getLeftVelocityInch(){
+        return deltaLeftInches/Constants.Autonomous.kloopPeriod;
+    }
+
+    public double getRightVelocityInch(){
+        return deltaRightInches/Constants.Autonomous.kloopPeriod;
+    }
+
 
     /**
      * For convenience, forward kinematic with an absolute rotation and previous rotation.
@@ -56,6 +73,21 @@ public class RobotState {
                                                               Position2d forward_kinematics) {
         //return current_pose.transformBy(Position2d.exp(forward_kinematics));
         return null;
+    }
+
+    @Override
+    public void update() {
+        estimatePositionAverageHeading((driveTrain.getLeftEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches, (driveTrain.getRightEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches, driveTrain.getGyroAngleRadians());
+    }
+
+    @Override
+    public void onStart() {
+        Init();
+    }
+
+    @Override
+    public void onStop() {
+
     }
 }
 

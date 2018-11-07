@@ -8,4 +8,8 @@ import com.team2052.autokrawler.auto.AutoMode;
  * Ends: Where it starts
  */
 public class DontMove extends AutoMode{
+    @Override
+    protected void init() {
+
+    }
 }
