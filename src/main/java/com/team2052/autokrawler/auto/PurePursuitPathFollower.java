@@ -41,16 +41,20 @@ public class PurePursuitPathFollower implements ILoopable{
 
     @Override
     public void update() {
-        currentPos = robotState.getLatestPosition();
-        checkDistances();
-        findLookAheadPoint();
-        findCurvature();
-        driveWheels();
+        if (path != null) {
+            System.out.println("PATH IS NOT NULL");
+            currentPos = robotState.getLatestPosition();
+            checkDistances();
+            findLookAheadPoint();
+            findCurvature();
+            driveWheels();
+        }
     }
 
     @Override
     public void onStart() {
         resetPathFollower();
+
     }
 
     @Override
@@ -62,7 +66,7 @@ public class PurePursuitPathFollower implements ILoopable{
      * find the point on the path that is the closest to the robot.
      */
     private void checkDistances(){
-        double distance;
+        double distance = 0;
         double closestDistance = Position2d.distanceFormula(path.getWaypoints().get(closestPointIndex).position, currentPos);
 
         for(int i = closestPointIndex; i < path.getWaypoints().size(); i++){
@@ -71,6 +75,7 @@ public class PurePursuitPathFollower implements ILoopable{
                 closestDistance = distance;
             }else{
                 closestPointIndex = i;
+                System.out.println("LINE 77    closest = " + i);
                 break;
             }
         }
@@ -115,7 +120,7 @@ public class PurePursuitPathFollower implements ILoopable{
             }
         }
         if(t == 0){
-            //todo: throw error
+            System.out.println("LINE 121   t = 0");
         }else {
             lookaheadPoint = new Position2d(path.getWaypoints().get(i).position.forward + lineSegment.y * t, path.getWaypoints().get(i).position.lateral + lineSegment.x * t);
         }

@@ -6,8 +6,6 @@ import com.team2052.autokrawler.auto.AutoModeSelector;
 import com.team2052.autokrawler.auto.PurePursuitPathFollower;
 import com.team2052.autokrawler.subsystems.DriveTrain;
 import com.team2052.lib.Autonomous.Path;
-import com.team2052.lib.Autonomous.Position2d;
-import com.team2052.lib.Autonomous.Waypoint;
 import com.team2052.lib.ControlLoop;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
@@ -26,6 +24,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void robotInit() {
         controlLoop.addLoopable(robotstate);
+        controlLoop.addLoopable(purePursuitPathFollower);
 
         AutoModeSelector.putToSmartDashboard();
     }
@@ -39,17 +38,23 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousInit() {
+        System.out.println("1");
+        controlLoop.start();
+        System.out.println("2");
         driveTrain.zeroGyro();
+        System.out.println("3");
         robotstate.Init();
+        System.out.println("4");
         AutoModeSelector.AutoModeDefinition currentAutoMode = AutoModeSelector.getAutoDefinition();
-        autoModeRunner.setAutomode(currentAutoMode.getInstance());
-        autoModeRunner.start();
+        System.out.println("5");
+        autoModeRunner.start(currentAutoMode.getInstance());
 
 
     }
 
     @Override
     public void teleopInit() {
+        controlLoop.start();
         driveTrain.zeroGyro();
         robotstate.Init();
 
@@ -70,7 +75,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        driveTrain.drive(controls.getTankJoy1() , controls.getTurnJoy1());
+        driveTrain.drive(controls.getTankJoy1() , controls.getTurnJoy2());
 
         if(controls.reset()){
             driveTrain.zeroGyro();

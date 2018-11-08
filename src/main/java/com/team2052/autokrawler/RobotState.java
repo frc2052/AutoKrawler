@@ -37,11 +37,12 @@ public class RobotState implements ILoopable{
         latestPosition.forward = deltaDistance * Math.cos(averageHeading) + latestPosition.forward;
         latestPosition.lateral = deltaDistance * Math.sin(averageHeading) + latestPosition.lateral;
         latestPosition.heading = radians;
-
+/*
         System.out.println("forward" + latestPosition.forward + "encoderInch: " + rightInches);
         System.out.println("lateral " + latestPosition.lateral);
         System.out.println("radians" + latestPosition.heading);
         System.out.println("degrees " + latestPosition.heading / 0.017453);
+        */
     }
 
     public void estimatePositionWithEncoders(double leftInches, double rightInches){

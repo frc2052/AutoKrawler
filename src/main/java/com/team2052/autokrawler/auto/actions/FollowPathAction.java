@@ -25,13 +25,14 @@ public class FollowPathAction implements Action{
 
     @Override
     public void start() {
+        System.out.println("starting auto");
         pathFollower.resetPathFollower();
         pathFollower.setPath(path);
     }
 
     @Override
     public void update() {
-        pathFollower.update();
+
     }
 
     public enum Direction{

@@ -24,6 +24,7 @@ public class Path {
      * @param waypoint
      */
     public void addWaypoint(Waypoint waypoint){
+
         waypoints.add(waypoints.size(),waypoint);
     }
 

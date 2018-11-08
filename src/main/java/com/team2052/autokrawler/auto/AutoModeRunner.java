@@ -1,33 +1,38 @@
 package com.team2052.autokrawler.auto;
 
 public class AutoModeRunner {
-    Thread autonomousThread; //create a thread
-    AutoModeBase automode; //create an automode base can be done this way because its abstract FACT CHECK THIS
+    Thread autoThread;
+    AutoModeBase autoMode;
 
-    public void start(){
-        if (automode == null){
+    public void start(AutoModeBase newMode) {//Initializes auto mode
+        if (this.autoMode != null) { //there is already a auto mode, should only happen in testing
+            try {
+                System.out.println("Existing Automode already in AutomodeRunner");
+                System.out.println(this.autoMode.getClass().getName());
+                this.autoMode.stop();
+            }
+            catch (Exception e)
+            {
+                System.out.println("Failed to stop existing Automode");
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        this.autoMode = newMode;
+        if (this.autoMode == null) {
             return;
         }
-        autonomousThread = new Thread(/* lines 15 to 20 == */() -> automode.start()); //this is a lambda expression.
-        /* instead of having to write the code that is commented out you can compress it to just a () ->
-        private Runnable autoRunnable = new Runnable() {
-            @Override
-            public void run() {
-               autoMode.start();
-            }
-        }; */
-        //automode.start(); //todo why was this uncommented
+        System.out.println("Starting new automode " + this.autoMode.getClass().getName());
+        autoThread = new Thread(() -> this.autoMode.start());
+        autoThread.start();
     }
 
-    public void setAutomode(AutoModeBase automode){ //sets this classes automode and prints the name to the console
-        System.out.println(automode);
-        this.automode = automode;
-    }
-
-    public void stop(){
-        if (automode != null){
-            automode.stop();
+    public void stop() {//Stops auto mode
+        if (autoMode != null) {
+            autoMode.stop();
+            autoMode = null;
         }
-        autonomousThread = null;
+        autoThread = null;
     }
+
 }

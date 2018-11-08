@@ -30,6 +30,7 @@ public abstract class AutoModeBase { //an abstract class cannot be run, only its
     }
 
     public void start(){ //starts the automode
+        System.out.println("Base Start");
         running = true;
         timer.reset();
         timer.start();
