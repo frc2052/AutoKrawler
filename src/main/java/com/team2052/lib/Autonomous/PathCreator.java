@@ -3,6 +3,7 @@ package com.team2052.lib.Autonomous;
 import com.team2052.autokrawler.Constants;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PathCreator {
@@ -21,7 +22,7 @@ public class PathCreator {
      */
     public List<Waypoint> createPath(List<Waypoint> waypoints){
 
-        List<Waypoint> pathPoints = null;
+        List<Waypoint> pathPoints = new ArrayList<Waypoint>();
         //create more points
         for(int i = 1; i < waypoints.size(); i++){
             Vector2d dir = new Vector2d();

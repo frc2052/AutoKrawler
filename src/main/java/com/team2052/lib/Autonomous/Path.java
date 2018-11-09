@@ -1,5 +1,6 @@
 package com.team2052.lib.Autonomous;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,8 +9,7 @@ import java.util.List;
 public class Path {
 
 
-    protected List<Waypoint> waypoints;
-
+    private List<Waypoint> waypoints = new ArrayList<Waypoint>();
 
 
     public Path(){
