@@ -15,7 +15,7 @@ public class Test extends AutoMode{
 
         System.out.println("init");
         testPath.addWaypoint(new Waypoint(new Position2d(0,0), 10));
-        testPath.addWaypoint(new Waypoint(new Position2d(50,50), 10));
+        testPath.addWaypoint(new Waypoint(new Position2d(50,0), 10));
 
         runAction(new FollowPathAction(testPath, FollowPathAction.Direction.FORWARD));
     }
