@@ -48,12 +48,12 @@ public class PathCreator {
         //set curvature
         for(int i = 1; i < pathPoints.size()-1; i++) {
 
-            double x1 = 0.0001 + pathPoints.get(i).position.forward; //add a small number to stop a division by 0
-            double y1 = pathPoints.get(i).position.lateral;
-            double x2 = pathPoints.get(i - 1).position.forward;
-            double y2 = pathPoints.get(i - 1).position.lateral;
-            double x3 = pathPoints.get(i + 1).position.forward;
-            double y3 = pathPoints.get(i + 1).position.lateral;
+            double x1 = 0.0001 + pathPoints.get(i).position.lateral; //add a small number to stop a division by 0
+            double y1 = pathPoints.get(i).position.forward;
+            double x2 = pathPoints.get(i - 1).position.lateral;
+            double y2 = pathPoints.get(i - 1).position.forward;
+            double x3 = pathPoints.get(i + 1).position.lateral;
+            double y3 = pathPoints.get(i + 1).position.forward;
 
 
             double k1 = 0.5 * (x1 * x1 + y1 * y1 - x2 * x2 - y2 * y2) / (x1 - x2);

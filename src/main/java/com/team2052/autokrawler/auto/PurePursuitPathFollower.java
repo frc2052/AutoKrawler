@@ -98,13 +98,13 @@ public class PurePursuitPathFollower implements ILoopable{
 
             Vector2d robotToStartPoint = new Vector2d(path.getWaypoints().get(i).position.lateral - currentPos.lateral, path.getWaypoints().get(i).position.forward - currentPos.forward);
 
-            double a = dotProduct(lineSegment.x,lineSegment.x,lineSegment.y,lineSegment.y);
-            double b = 2 * dotProduct(robotToStartPoint.x,lineSegment.x,robotToStartPoint.y,lineSegment.y);
-            double c = dotProduct(robotToStartPoint.x,robotToStartPoint.x,robotToStartPoint.y,robotToStartPoint.y) - Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance;
+            double a = dotProduct(lineSegment.x,lineSegment.y,lineSegment.x,lineSegment.y);
+            double b = 2 * dotProduct(robotToStartPoint.x,robotToStartPoint.y,lineSegment.x,lineSegment.y);
+            double c = dotProduct(robotToStartPoint.x,robotToStartPoint.y,robotToStartPoint.x,robotToStartPoint.y) - Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance;
             double discriminent = b*b - 4*a*c;
 
             if (discriminent < 0){
-                //no intersection
+                System.out.println("NO INTERSECTION");
             }else{
                 discriminent = Math.sqrt(discriminent);
                 double t1 = (-b - discriminent)/(2*a);
@@ -169,7 +169,7 @@ public class PurePursuitPathFollower implements ILoopable{
     }
 
     public boolean isPathComplete(){
-        return false;
+        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size()-1).position, currentPos) < 6; //check if we are 6 inches from last point
     }
 
     public void resetPathFollower(){

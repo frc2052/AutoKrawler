@@ -15,7 +15,7 @@ public class FollowPathAction implements Action{
 
     @Override
     public void done() {
-
+        pathFollower.resetPathFollower();
     }
 
     @Override
