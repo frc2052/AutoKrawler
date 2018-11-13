@@ -24,7 +24,6 @@ public class Robot extends IterativeRobot {
     @Override
     public void robotInit() {
         controlLoop.addLoopable(robotstate);
-        controlLoop.addLoopable(purePursuitPathFollower);
 
         AutoModeSelector.putToSmartDashboard();
     }
@@ -75,12 +74,14 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        driveTrain.drive(controls.getTankJoy1() , controls.getTurnJoy2());
+        driveTrain.drive(controls.getTankJoy1() , controls.getTurnJoy1());
 
         if(controls.reset()){
             driveTrain.zeroGyro();
             robotstate.Init();
         }
+
+        System.out.println("VELOCITY: "+ robotstate.getVelocityInches());
     }
 
     @Override

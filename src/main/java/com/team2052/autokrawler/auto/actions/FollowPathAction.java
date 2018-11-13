@@ -26,7 +26,7 @@ public class FollowPathAction implements Action{
     @Override
     public void start() {
         System.out.println("starting auto");
-        pathFollower.resetPathFollower();
+        pathFollower.start();
         pathFollower.setPath(path);
     }
 

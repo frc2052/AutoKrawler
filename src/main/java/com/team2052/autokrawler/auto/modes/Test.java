@@ -14,8 +14,11 @@ public class Test extends AutoMode{
         Path testPath = new Path();
 
         System.out.println("init");
-        testPath.addWaypoint(new Waypoint(new Position2d(0,0), 10));
-        testPath.addWaypoint(new Waypoint(new Position2d(50,0), 10));
+        testPath.addWaypoint(new Waypoint(new Position2d(0,0), 20));
+        testPath.addWaypoint(new Waypoint(new Position2d(12,0), 20));
+        testPath.addWaypoint(new Waypoint(new Position2d(24,0), 20));
+        testPath.addWaypoint(new Waypoint(new Position2d(36,0), 20));
+        testPath.addWaypoint(new Waypoint(new Position2d(48,0), 20));
 
         runAction(new FollowPathAction(testPath, FollowPathAction.Direction.FORWARD));
     }

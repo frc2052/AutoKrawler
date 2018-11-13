@@ -7,13 +7,12 @@ import com.team2052.lib.Autonomous.Path;
 import com.team2052.lib.Autonomous.PathCreator;
 import com.team2052.lib.Autonomous.Position2d;
 import com.team2052.lib.Autonomous.RateLimiter;
-import com.team2052.lib.ILoopable;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
 /**
  * Created by KnightKrawler on 9/12/2018.
  */
-public class PurePursuitPathFollower implements ILoopable{
+public class PurePursuitPathFollower{
 
     private static PurePursuitPathFollower instance = new PurePursuitPathFollower();
     private PurePursuitPathFollower() {}
@@ -39,7 +38,6 @@ public class PurePursuitPathFollower implements ILoopable{
     }
 
 
-    @Override
     public void update() {
         if (path != null) {
             System.out.println("PATH IS NOT NULL");
@@ -51,16 +49,10 @@ public class PurePursuitPathFollower implements ILoopable{
         }
     }
 
-    @Override
-    public void onStart() {
+    public void start() {
         resetPathFollower();
-
     }
 
-    @Override
-    public void onStop() {
-
-    }
 
     /**
      * find the point on the path that is the closest to the robot.
@@ -92,7 +84,7 @@ public class PurePursuitPathFollower implements ILoopable{
 
         Vector2d lineSegment = new Vector2d();
 
-        for( i = closestPointIndex; t == 0 && i < path.getWaypoints().size(); i++) {
+        for( i = closestPointIndex; t == 0 && i < path.getWaypoints().size()-1; i++) {
             // x = NextclosestPointX - closestPointX y = NextclosestPointY - closestPointY
             lineSegment = new Vector2d(path.getWaypoints().get(i + 1).position.lateral - path.getWaypoints().get(i).position.lateral, path.getWaypoints().get(i + 1).position.forward - path.getWaypoints().get(i).position.forward);
 
@@ -121,9 +113,8 @@ public class PurePursuitPathFollower implements ILoopable{
         }
         if(t == 0){
             System.out.println("LINE 121   t = 0");
-        }else {
-            lookaheadPoint = new Position2d(path.getWaypoints().get(i).position.forward + lineSegment.y * t, path.getWaypoints().get(i).position.lateral + lineSegment.x * t);
         }
+        lookaheadPoint = new Position2d(path.getWaypoints().get(i).position.forward + lineSegment.y * t, path.getWaypoints().get(i).position.lateral + lineSegment.x * t);
     }
 
     /**
@@ -148,10 +139,10 @@ public class PurePursuitPathFollower implements ILoopable{
      * calculate the velocit in percent of the left and right wheels
      */
     private void driveWheels(){
-        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInches(), -Constants.Autonomous.kMaxAccel, Constants.Autonomous.kMaxAccel);
+        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInches(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriod, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriod);
         double velocity = robotState.getVelocityInches() +  deltaVelocity;
         double leftWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
-        double rightWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
+        double rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2; //changed + to -
 
         double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity ;
         double rightFeedForward = Constants.Autonomous.kV * rightWheelVel + Constants.Autonomous.kA * deltaVelocity ;
@@ -161,6 +152,8 @@ public class PurePursuitPathFollower implements ILoopable{
         double leftSpeed = leftFeedForward + leftFeedBack;
         double rightSpeed = rightFeedForward + rightFeedBack;
 
+        System.out.println("leftvel: " + leftWheelVel + "rightvel: " + rightWheelVel + "vel: " + velocity + "dv:" + deltaVelocity + "tarVel: " + path.getWaypoints().get(closestPointIndex).velocity);
+
         driveTrain.driveTank(leftSpeed, rightSpeed);
     }
 
@@ -169,7 +162,11 @@ public class PurePursuitPathFollower implements ILoopable{
     }
 
     public boolean isPathComplete(){
-        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size()-1).position, currentPos) < 6; //check if we are 6 inches from last point
+        if(currentPos == null) {
+            return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos) < 6; //check if we are 6 inches from last point
+        }else {
+            return false;
+        }
     }
 
     public void resetPathFollower(){
