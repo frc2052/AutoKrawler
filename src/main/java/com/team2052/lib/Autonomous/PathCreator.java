@@ -79,7 +79,7 @@ public class PathCreator {
             pathPoints.get(pathPoints.size()-i).velocity = Math.min(pathPoints.get(pathPoints.size()-i).velocity, Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).velocity,2) + 2 * Constants.Autonomous.kMaxAccel * d));
         }
         System.out.println("CREATED PATH");
-        return pathPoints;
+        return pathPoints; //todo: extend path
     }
 
 

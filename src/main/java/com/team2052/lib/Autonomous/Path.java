@@ -30,5 +30,5 @@ public class Path {
 
     public List<Waypoint> getWaypoints(){
         return waypoints;
-    }
+    } //todo: should this be copy or stay a pointer?
 }

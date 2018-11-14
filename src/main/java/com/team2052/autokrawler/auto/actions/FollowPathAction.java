@@ -14,8 +14,7 @@ public class FollowPathAction implements Action{
     }
 
     @Override
-    public void done() {
-        pathFollower.resetPathFollower();
+    public void done() { //todo: set path to null when finished?
     }
 
     @Override
@@ -26,13 +25,12 @@ public class FollowPathAction implements Action{
     @Override
     public void start() {
         System.out.println("starting auto");
-        pathFollower.start();
-        pathFollower.setPath(path);
+        pathFollower.start(path);
     }
 
     @Override
     public void update() {
-
+        pathFollower.update();
     }
 
     public enum Direction{

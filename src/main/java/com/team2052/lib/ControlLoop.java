@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class ControlLoop {
     private final Object runningThread = new Object();
-    private double period = 1.0 / 100.0;
+    private double periodSec = 1.0 / 100.0; //default to hardcode
     private ArrayList<ILoopable> loopables = new ArrayList<ILoopable>();
 
     private Runnable runnable = () -> {
@@ -18,8 +18,8 @@ public class ControlLoop {
 
     private Notifier notifier;
 
-    public ControlLoop(double period) {
-        this.period = period;
+    public ControlLoop(double periodSec) {
+        this.periodSec = periodSec;
         notifier = new Notifier(runnable);
     }
 
@@ -29,7 +29,7 @@ public class ControlLoop {
         }
 
         synchronized (runningThread) {
-            notifier.startPeriodic(period);
+            notifier.startPeriodic(periodSec);
         }
     }
 

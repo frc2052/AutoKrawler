@@ -33,31 +33,28 @@ public class PurePursuitPathFollower{
 
     private double curvature;
 
-    public void setPath(Path path){
-        this.path = new Path(pathCreator.createPath(path.getWaypoints()));
-    }
-
-
     public void update() {
         if (path != null) {
-            System.out.println("PATH IS NOT NULL");
-            currentPos = robotState.getLatestPosition();
-            checkDistances();
+            currentPos = robotState.getLatestPosition();//where I actually am
+            updateClosestPointIndex();
             findLookAheadPoint();
             findCurvature();
             driveWheels();
+        }else{
+            System.out.println("NO PATH ERROR");
         }
     }
 
-    public void start() {
-        resetPathFollower();
+    public void start(Path path) {
+        closestPointIndex = 0;
+        this.path = new Path(pathCreator.createPath(path.getWaypoints())); //more detailed path from smaller path
     }
 
 
     /**
      * find the point on the path that is the closest to the robot.
      */
-    private void checkDistances(){
+    private void updateClosestPointIndex(){
         double distance = 0;
         double closestDistance = Position2d.distanceFormula(path.getWaypoints().get(closestPointIndex).position, currentPos);
 
@@ -138,13 +135,13 @@ public class PurePursuitPathFollower{
     /**
      * calculate the velocit in percent of the left and right wheels
      */
-    private void driveWheels(){
-        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInches(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriod, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriod);
+    private void driveWheels(){ //todo: set a minimum power to wheels
+        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInches(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
         double velocity = robotState.getVelocityInches() +  deltaVelocity;
-        double leftWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
+        double leftWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2; //todo: figure this out or redo
         double rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2; //changed + to -
 
-        double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity ;
+        double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity; //todo: have to understand ka and kp
         double rightFeedForward = Constants.Autonomous.kV * rightWheelVel + Constants.Autonomous.kA * deltaVelocity ;
         double leftFeedBack = Constants.Autonomous.kP * (leftWheelVel - robotState.getLeftVelocityInch());
         double rightFeedBack = Constants.Autonomous.kP * (rightWheelVel - robotState.getRightVelocityInch());
@@ -167,9 +164,5 @@ public class PurePursuitPathFollower{
         }else {
             return false;
         }
-    }
-
-    public void resetPathFollower(){
-        closestPointIndex = 0;
     }
 }

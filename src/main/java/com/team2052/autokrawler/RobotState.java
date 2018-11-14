@@ -5,7 +5,7 @@ import com.team2052.autokrawler.subsystems.DriveTrain;
 import com.team2052.lib.Autonomous.Position2d;
 import com.team2052.lib.ILoopable;
 
-public class RobotState implements ILoopable{
+public class RobotState implements ILoopable{ //todo: romove loopable and split
 
     static double pastLeftInches;
     static double pastRightInches;
@@ -50,15 +50,15 @@ public class RobotState implements ILoopable{
     }
 
     public double getVelocityInches(){
-        return deltaDistance/Constants.Autonomous.kloopPeriod;
+        return deltaDistance/Constants.Autonomous.kloopPeriodSec;
     }
 
     public double getLeftVelocityInch(){
-        return deltaLeftInches/Constants.Autonomous.kloopPeriod;
+        return deltaLeftInches/Constants.Autonomous.kloopPeriodSec;
     }
 
     public double getRightVelocityInch() {
-        return deltaRightInches / Constants.Autonomous.kloopPeriod;
+        return deltaRightInches / Constants.Autonomous.kloopPeriodSec;
     }
 
     @Override
