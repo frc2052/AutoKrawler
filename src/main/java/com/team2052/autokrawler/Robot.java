@@ -13,6 +13,7 @@ public class Robot extends IterativeRobot {
     private DriveTrain driveTrain = DriveTrain.getInstance();
     private Controls controls = Controls.getInstance();
     private RobotState robotstate = RobotState.getInstance();
+    private RobotStateCalculator robotStateCalculator = RobotStateCalculator.getInstance();
     private AutoModeRunner autoModeRunner = new AutoModeRunner();
     private ControlLoop controlLoop = new ControlLoop(Constants.Autonomous.kloopPeriodSec);
 
@@ -21,7 +22,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotInit() {
-        controlLoop.addLoopable(robotstate);
+        controlLoop.addLoopable(robotStateCalculator);
 
         AutoModeSelector.putToSmartDashboard();
     }
@@ -37,7 +38,7 @@ public class Robot extends IterativeRobot {
     public void autonomousInit() {
         controlLoop.start();
         driveTrain.zeroGyro();
-        robotstate.Init();
+        robotStateCalculator.resetRobotState();
         AutoModeSelector.AutoModeDefinition currentAutoMode = AutoModeSelector.getAutoDefinition();
         autoModeRunner.start(currentAutoMode.getInstance());
 
@@ -49,7 +50,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         controlLoop.start();
         driveTrain.zeroGyro();
-        robotstate.Init();
+        robotStateCalculator.resetRobotState();
 
 
     }
@@ -72,10 +73,10 @@ public class Robot extends IterativeRobot {
 
         if(controls.reset()){
             driveTrain.zeroGyro();
-            robotstate.Init();
+            robotStateCalculator.resetRobotState();
         }
 
-        System.out.println("VELOCITY: "+ robotstate.getVelocityInches());
+        System.out.println("VELOCITY: "+ robotstate.getVelocityInch());
     }
 
     @Override

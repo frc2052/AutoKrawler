@@ -14,6 +14,7 @@ public class Constants {
         public static final int kDriveRightMasterId = 4;
         public static final int kDriveRightSlaveId = 3;
 
+        public static final int kVelocityControlSlot = 0;
         public static final int kCANBusConfigTimeoutMS = 10;
         public static final int kkTicksPerRot = 1024;
         public static final double kDriveWheelCircumferenceInches = 6.0 * Math.PI;
@@ -33,6 +34,10 @@ public class Constants {
         public static final double kV = 1/kMaxVelocity;
         public static final double kA = 0;
         public static final double kP = 0;
+
+        public static final double minVelocity = 0.05; //range 0-1: minimum amount of power to overcome static friction
+
+        public static final double minPointSpacing = 6;
 
     }
 }

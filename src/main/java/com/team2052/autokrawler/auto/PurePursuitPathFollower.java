@@ -108,9 +108,6 @@ public class PurePursuitPathFollower{
                 }
             }
         }
-        if(t == 0){
-            System.out.println("LINE 121   t = 0");
-        }
         lookaheadPoint = new Position2d(path.getWaypoints().get(i).position.forward + lineSegment.y * t, path.getWaypoints().get(i).position.lateral + lineSegment.x * t);
     }
 
@@ -135,13 +132,13 @@ public class PurePursuitPathFollower{
     /**
      * calculate the velocit in percent of the left and right wheels
      */
-    private void driveWheels(){ //todo: set a minimum power to wheels
-        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInches(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
-        double velocity = robotState.getVelocityInches() +  deltaVelocity;
+    private void driveWheels(){
+        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
+        double velocity = robotState.getVelocityInch() +  deltaVelocity;
         double leftWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2; //todo: figure this out or redo
-        double rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2; //changed + to -
+        double rightWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
 
-        double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity; //todo: have to understand ka and kp
+        double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity;
         double rightFeedForward = Constants.Autonomous.kV * rightWheelVel + Constants.Autonomous.kA * deltaVelocity ;
         double leftFeedBack = Constants.Autonomous.kP * (leftWheelVel - robotState.getLeftVelocityInch());
         double rightFeedBack = Constants.Autonomous.kP * (rightWheelVel - robotState.getRightVelocityInch());
@@ -151,6 +148,14 @@ public class PurePursuitPathFollower{
 
         System.out.println("leftvel: " + leftWheelVel + "rightvel: " + rightWheelVel + "vel: " + velocity + "dv:" + deltaVelocity + "tarVel: " + path.getWaypoints().get(closestPointIndex).velocity);
 
+        if (leftSpeed < Constants.Autonomous.minVelocity){//at these speeds, the ratio between wheels does not matter. the robot will correct itself later
+            leftSpeed = Constants.Autonomous.minVelocity;
+        }
+
+        if (rightSpeed < Constants.Autonomous.minVelocity){ //at these speeds, the ratio between wheels does not matter. the robot will correct itself later
+            rightSpeed = Constants.Autonomous.minVelocity;
+        }
+
         driveTrain.driveTank(leftSpeed, rightSpeed);
     }
 
@@ -159,10 +164,14 @@ public class PurePursuitPathFollower{
     }
 
     public boolean isPathComplete(){
-        if(currentPos == null) {
+        if(currentPos != null) {
             return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos) < 6; //check if we are 6 inches from last point
         }else {
             return false;
         }
+    }
+
+    public void deletePath(){
+        path = null;
     }
 }

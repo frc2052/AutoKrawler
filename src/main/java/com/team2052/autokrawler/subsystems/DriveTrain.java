@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class DriveTrain {
 
-    protected static final int kVelocityControlSlot = 0;
-
     // Instance of DriveTrain class to be created in Robot.java class by running get instance
     private static DriveTrain singleDriveTrainInstance = new DriveTrain();
     public static DriveTrain getInstance() { return singleDriveTrainInstance; }
@@ -29,8 +27,8 @@ public class DriveTrain {
         rightSlave = new TalonSRX(Constants.DriveTrain.kDriveRightSlaveId);
         leftSlave = new TalonSRX(Constants.DriveTrain.kDriveLeftSlaveId);
 
-        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, kVelocityControlSlot, Constants.DriveTrain.kCANBusConfigTimeoutMS);
-        leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, kVelocityControlSlot, Constants.DriveTrain.kCANBusConfigTimeoutMS);
+        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.DriveTrain.kVelocityControlSlot, Constants.DriveTrain.kCANBusConfigTimeoutMS);
+        leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.DriveTrain.kVelocityControlSlot, Constants.DriveTrain.kCANBusConfigTimeoutMS);
 
         rightMaster.setInverted(false);
         rightSlave.setInverted(false);
@@ -105,6 +103,12 @@ public class DriveTrain {
         return rightMaster.getSelectedSensorPosition(0);
     }
 
+    public void resetEncoders(){
+        leftMaster.setSelectedSensorPosition(0, Constants.DriveTrain.kVelocityControlSlot, Constants.DriveTrain.kCANBusConfigTimeoutMS);
+        rightMaster.setSelectedSensorPosition(0, Constants.DriveTrain.kVelocityControlSlot, Constants.DriveTrain.kCANBusConfigTimeoutMS);
+    }
+
+
     public void zeroGyro() {
         if (navXGyro != null) {
             System.out.println("Reseting Gyro");
@@ -118,7 +122,7 @@ public class DriveTrain {
             {
                 System.out.println("Gyro still calibrating");
             }
-            System.out.println("Gyro Reset");
+            System.out.println("Gyro reset");
         } else {
             System.out.println("DANGER: NO GYRO!!!!");
         }

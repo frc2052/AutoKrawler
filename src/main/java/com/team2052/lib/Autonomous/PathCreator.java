@@ -8,31 +8,30 @@ import java.util.List;
 
 public class PathCreator {
 
-    double spacing = 6; //in inches//todo constant
-
 
     /**
      * from added waypoints:
      *
      * 1.add more points between existing points
      *
-     * 2. calculate distances fora ll points
+     * 2. calculate distances for all points
      *
-     * 3 calcualte curvature at each point
+     * 3 calculate curvature at each point
      */
     public List<Waypoint> createPath(List<Waypoint> waypoints){
 
         List<Waypoint> pathPoints = new ArrayList<Waypoint>();
+
         //create more points
         for(int i = 1; i < waypoints.size(); i++){
             Vector2d dir = new Vector2d();
             dir.x = waypoints.get(i-1).position.lateral - waypoints.get(i).position.lateral;
             dir.y = waypoints.get(i-1).position.forward - waypoints.get(i).position.forward;
             double mag = dir.magnitude();
-            int numOfPts = (int)(mag/spacing);
+            int numOfPts = (int)(mag/Constants.Autonomous.minPointSpacing);
 
-            dir.x = (dir.x/mag) * spacing;
-            dir.y = (dir.y/mag) * spacing;
+            dir.x = (dir.x/mag) * Constants.Autonomous.minPointSpacing;
+            dir.y = (dir.y/mag) * Constants.Autonomous.minPointSpacing;
 
             for(int j = 0; j < numOfPts; j++){
                 pathPoints.add(pathPoints.size(), new Waypoint(waypoints.get(i-1).position.translateBy(new Position2d(-dir.x, -dir.y)),waypoints.get(i).velocity)); //forward is x todo: check velocity math

@@ -33,7 +33,7 @@ public class Position2d {
     }
 
 
-    public void Reset(){
+    public void reset(){
         forward = 0;
         lateral = 0;
         heading = 0;

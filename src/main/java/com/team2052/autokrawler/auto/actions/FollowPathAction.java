@@ -14,7 +14,8 @@ public class FollowPathAction implements Action{
     }
 
     @Override
-    public void done() { //todo: set path to null when finished?
+    public void done() {
+        pathFollower.deletePath();
     }
 
     @Override
