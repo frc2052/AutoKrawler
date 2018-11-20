@@ -8,7 +8,7 @@ public class Waypoint {
     public Position2d position;
     public double velocity;
     public double curvature; //1/radius of circle created by point ahead and behind
-    public double distance; //todo: is this used
+    public double distance; //todo: does this need to be apart of Waypoint
 
     /**
      * @param position in inches

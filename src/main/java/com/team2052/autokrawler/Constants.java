@@ -35,9 +35,9 @@ public class Constants {
         public static final double kA = 0;
         public static final double kP = 0;
 
-        public static final double minVelocity = 0.05; //range 0-1: minimum amount of power to overcome static friction
+        public static final double kMinVelocity = 0.05; //range 0-1: minimum amount of power to overcome static friction
 
-        public static final double minPointSpacing = 6;
+        public static final double kMinPointSpacing = 6;
 
     }
 }

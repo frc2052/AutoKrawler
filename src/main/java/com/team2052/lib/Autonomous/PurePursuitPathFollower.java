@@ -1,12 +1,8 @@
-package com.team2052.autokrawler.auto;
+package com.team2052.lib.Autonomous;
 
 import com.team2052.autokrawler.Constants;
 import com.team2052.autokrawler.RobotState;
 import com.team2052.autokrawler.subsystems.DriveTrain;
-import com.team2052.lib.Autonomous.Path;
-import com.team2052.lib.Autonomous.PathCreator;
-import com.team2052.lib.Autonomous.Position2d;
-import com.team2052.lib.Autonomous.RateLimiter;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
 /**
@@ -148,12 +144,12 @@ public class PurePursuitPathFollower{
 
         System.out.println("leftvel: " + leftWheelVel + "rightvel: " + rightWheelVel + "vel: " + velocity + "dv:" + deltaVelocity + "tarVel: " + path.getWaypoints().get(closestPointIndex).velocity);
 
-        if (leftSpeed < Constants.Autonomous.minVelocity){//at these speeds, the ratio between wheels does not matter. the robot will correct itself later
-            leftSpeed = Constants.Autonomous.minVelocity;
+        if (leftSpeed < Constants.Autonomous.kMinVelocity){//at these speeds, the ratio between wheels does not matter. the robot will correct itself later
+            leftSpeed = Constants.Autonomous.kMinVelocity;
         }
 
-        if (rightSpeed < Constants.Autonomous.minVelocity){ //at these speeds, the ratio between wheels does not matter. the robot will correct itself later
-            rightSpeed = Constants.Autonomous.minVelocity;
+        if (rightSpeed < Constants.Autonomous.kMinVelocity){ //at these speeds, the ratio between wheels does not matter. the robot will correct itself later
+            rightSpeed = Constants.Autonomous.kMinVelocity;
         }
 
         driveTrain.driveTank(leftSpeed, rightSpeed);
