@@ -1,18 +1,16 @@
 package com.team2052.autokrawler;
 
 
-import com.team2052.autokrawler.subsystems.DriveTrain;
 import com.team2052.lib.Autonomous.Position2d;
-import com.team2052.lib.ILoopable;
 
 public class RobotState{
 
 
 
     private Position2d latestPosition = new Position2d();
-    private double rightVelocityInch;
-    private double leftVelocityInch;
-    private double velocityInch;
+    private double rightVelocityInch = 0;
+    private double leftVelocityInch = 0;
+    private double velocityInch = 0;
 
     private static RobotState singleRobotStateInstance = new RobotState();
     public static RobotState getInstance() { return singleRobotStateInstance; }

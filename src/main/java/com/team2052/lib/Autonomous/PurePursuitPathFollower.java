@@ -43,6 +43,7 @@ public class PurePursuitPathFollower{
 
     public void start(Path path) {
         closestPointIndex = 0;
+        System.out.println("creating path");
         this.path = new Path(pathCreator.createPath(path.getWaypoints())); //more detailed path from smaller path
     }
 
@@ -60,7 +61,7 @@ public class PurePursuitPathFollower{
                 closestDistance = distance;
             }else{
                 closestPointIndex = i;
-                System.out.println("LINE 77    closest = " + i);
+                System.out.println("closest = " + i);
                 break;
             }
         }
@@ -122,13 +123,15 @@ public class PurePursuitPathFollower{
         double side = Math.signum(Math.sin(currentPos.heading) * (lookaheadPoint.lateral - currentPos.lateral) - Math.cos(currentPos.heading) * (lookaheadPoint.forward - currentPos.forward));
 
         curvature = side * ((2*x)/ (Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance));
-
+        System.out.println("curvature: " + curvature);
     }
 
     /**
      * calculate the velocit in percent of the left and right wheels
      */
     private void driveWheels(){
+        System.out.println("Closest V: " + path.getWaypoints().get(closestPointIndex).velocity );
+        System.out.println("Vel" + robotState.getVelocityInch());
         double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
         double velocity = robotState.getVelocityInch() +  deltaVelocity;
         double leftWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2; //todo: figure this out or redo
@@ -143,14 +146,6 @@ public class PurePursuitPathFollower{
         double rightSpeed = rightFeedForward + rightFeedBack;
 
         System.out.println("leftvel: " + leftWheelVel + "rightvel: " + rightWheelVel + "vel: " + velocity + "dv:" + deltaVelocity + "tarVel: " + path.getWaypoints().get(closestPointIndex).velocity);
-
-        if (leftSpeed < Constants.Autonomous.kMinVelocity){//at these speeds, the ratio between wheels does not matter. the robot will correct itself later
-            leftSpeed = Constants.Autonomous.kMinVelocity;
-        }
-
-        if (rightSpeed < Constants.Autonomous.kMinVelocity){ //at these speeds, the ratio between wheels does not matter. the robot will correct itself later
-            rightSpeed = Constants.Autonomous.kMinVelocity;
-        }
 
         driveTrain.driveTank(leftSpeed, rightSpeed);
     }

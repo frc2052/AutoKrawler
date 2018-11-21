@@ -27,7 +27,7 @@ public class Constants {
         public static final double kMaxVelocity = 10 * 12; //10 * 12
         public static final double kMaxAccel = 12.0;///TESTTTTTT
         public static final long kloopPeriodMs = 10;
-        public static final double kloopPeriodSec = kloopPeriodMs/1000;
+        public static final double kloopPeriodSec = kloopPeriodMs/1000.0; //int devision
 
         public static final double kLookaheadDistance = 12; //12-25
         public static final double kTrackWidth = 25;

@@ -97,9 +97,11 @@ public class DriveTrain {
     }
 
     public double getLeftEncoder(){
+        //System.out.println("LEFT ENCODER: " +leftMaster.getSelectedSensorPosition(0));
         return leftMaster.getSelectedSensorPosition(0);
     }
     public double getRightEncoder(){
+        //System.out.println("RIGHT ENCODER: " + rightMaster.getSelectedSensorPosition(0));
         return rightMaster.getSelectedSensorPosition(0);
     }
 

@@ -29,6 +29,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledInit() {
+        System.out.println("DISABLE INIT");
         autoModeRunner.stop();
         controlLoop.stop();
         driveTrain.driveTank(0,0);

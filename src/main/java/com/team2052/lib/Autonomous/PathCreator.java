@@ -20,6 +20,9 @@ public class PathCreator {
      */
     public List<Waypoint> createPath(List<Waypoint> wayPoints){
 
+        for(int i = 0; i < wayPoints.size(); i++){
+            System.out.println("path points: x: " + wayPoints.get(i).position.lateral + "y: " + wayPoints.get(i).position.forward);
+        }
         List<Waypoint> pathPoints = new ArrayList<Waypoint>();
 
         wayPoints.get(wayPoints.size()-1).velocity = 0; //set the final point to 0 velocity
@@ -32,22 +35,34 @@ public class PathCreator {
         finalDir.x = (finalDir.x/finMag) * Constants.Autonomous.kLookaheadDistance;
         finalDir.y = (finalDir.y/finMag) * Constants.Autonomous.kLookaheadDistance;
 
-        wayPoints.add(wayPoints.size(), new Waypoint(new Position2d(wayPoints.get(wayPoints.size()-1).position.lateral + finalDir.x,wayPoints.get(wayPoints.size()-1).position.forward + finalDir.y), 0));
+        wayPoints.add(wayPoints.size(), new Waypoint(new Position2d(wayPoints.get(wayPoints.size()-1).position.forward + finalDir.y, wayPoints.get(wayPoints.size()-1).position.lateral + finalDir.x), 0));
 
+        System.out.println("ADDED LAST POINT");
+        for(int i = 0; i < wayPoints.size(); i++){
+
+            System.out.println("path points: x: " + wayPoints.get(i).position.lateral + "y: " + wayPoints.get(i).position.forward);
+        }
+
+        System.out.println("adding more points");
         //create more points
+        pathPoints.add(pathPoints.size(), wayPoints.get(0));
         for(int i = 1; i < wayPoints.size(); i++){
             Vector2d dir = new Vector2d();
             dir.x = wayPoints.get(i).position.lateral - wayPoints.get(i-1).position.lateral; //it should be the farthest minus the closest which is i - (i-1)
             dir.y = wayPoints.get(i).position.forward - wayPoints.get(i-1).position.forward;
             double mag = dir.magnitude();
+            System.out.println("Vector x: " + dir.x + "Vector y: " + dir.y);
             int numOfPts = (int)(mag/Constants.Autonomous.kMinPointSpacing);
 
             dir.x = (dir.x/mag) * Constants.Autonomous.kMinPointSpacing;
             dir.y = (dir.y/mag) * Constants.Autonomous.kMinPointSpacing;
 
-            pathPoints.add(pathPoints.size(), wayPoints.get(i-1));
-            for(int j = 0; j < numOfPts; j++){
-                pathPoints.add(pathPoints.size(), new Waypoint(wayPoints.get(i-1).position.translateBy(new Position2d(-dir.x, -dir.y)),wayPoints.get(i).velocity)); //forward is x todo: check velocity math
+            System.out.println("Vector x2: " + dir.x + "Vector y2: " + dir.y);
+
+            System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).position.lateral + "y: " + pathPoints.get(pathPoints.size()-1).position.forward);
+            for(int j = 0; j < numOfPts; j++){ 
+                pathPoints.add(pathPoints.size(), new Waypoint(pathPoints.get(pathPoints.size()-1).position.translateBy(new Position2d(dir.y, dir.x)),wayPoints.get(i).velocity)); //forward is x todo: check velocity math
+                System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).position.lateral + "y: " + pathPoints.get(pathPoints.size()-1).position.forward);
             }
         }
 
@@ -91,6 +106,10 @@ public class PathCreator {
             pathPoints.get(pathPoints.size()-i).velocity = Math.min(pathPoints.get(pathPoints.size()-i).velocity, Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).velocity,2) + 2 * Constants.Autonomous.kMaxAccel * d));
         }
         System.out.println("CREATED PATH");
+
+        for(int i = 0; i < pathPoints.size(); i++){
+            System.out.println("path points: x: " + pathPoints.get(i).position.lateral + "y: " + pathPoints.get(i).position.forward);
+        }
         return pathPoints;
     }
 
