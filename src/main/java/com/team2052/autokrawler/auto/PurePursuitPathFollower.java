@@ -1,8 +1,11 @@
-package com.team2052.lib.Autonomous;
+package com.team2052.autokrawler.auto;
 
 import com.team2052.autokrawler.Constants;
 import com.team2052.autokrawler.RobotState;
 import com.team2052.autokrawler.subsystems.DriveTrain;
+import com.team2052.lib.Autonomous.Path;
+import com.team2052.lib.Autonomous.Position2d;
+import com.team2052.lib.Autonomous.RateLimiter;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
 /**

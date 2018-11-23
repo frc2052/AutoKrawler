@@ -1,6 +1,8 @@
-package com.team2052.lib.Autonomous;
+package com.team2052.autokrawler.auto;
 
 import com.team2052.autokrawler.Constants;
+import com.team2052.lib.Autonomous.Position2d;
+import com.team2052.lib.Autonomous.Waypoint;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
 import java.util.ArrayList;

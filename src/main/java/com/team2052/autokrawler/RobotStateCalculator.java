@@ -30,8 +30,8 @@ public class RobotStateCalculator implements ILoopable{
         pastRightInches = rightInches;
         pastLeftInches = leftInches;
 
-        latestPosition.forward = deltaDistance * Math.cos(averageHeading) + latestPosition.forward;
-        latestPosition.lateral = deltaDistance * Math.sin(averageHeading) + latestPosition.lateral;
+        latestPosition.forward = deltaDistance * Math.sin(averageHeading) + latestPosition.forward;
+        latestPosition.lateral = deltaDistance * Math.cos(averageHeading) + latestPosition.lateral;
         latestPosition.heading = radians;
 /*
         System.out.println("forward" + latestPosition.forward + "encoderInch: " + rightInches);

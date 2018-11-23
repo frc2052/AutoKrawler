@@ -1,6 +1,6 @@
 package com.team2052.autokrawler.auto.actions;
 
-import com.team2052.lib.Autonomous.PurePursuitPathFollower;
+import com.team2052.autokrawler.auto.PurePursuitPathFollower;
 import com.team2052.lib.Autonomous.Path;
 
 public class FollowPathAction implements Action{
