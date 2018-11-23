@@ -65,7 +65,7 @@ public class Robot extends IterativeRobot {
     
     @Override
     public void autonomousPeriodic() {
-
+        robotstate.outputToSmartDashboard();
     }
 
     @Override
@@ -77,7 +77,8 @@ public class Robot extends IterativeRobot {
             robotStateCalculator.resetRobotState();
         }
 
-        System.out.println("VELOCITY: "+ robotstate.getVelocityInch());
+
+        robotstate.outputToSmartDashboard();
     }
 
     @Override

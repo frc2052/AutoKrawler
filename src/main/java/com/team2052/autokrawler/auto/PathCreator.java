@@ -4,6 +4,7 @@ import com.team2052.autokrawler.Constants;
 import com.team2052.lib.Autonomous.Position2d;
 import com.team2052.lib.Autonomous.Waypoint;
 import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,9 +113,23 @@ public class PathCreator {
         for(int i = 0; i < pathPoints.size(); i++){
             System.out.println("path points: x: " + pathPoints.get(i).position.lateral + "y: " + pathPoints.get(i).position.forward);
         }
+        pushPathToSmartDashboard(pathPoints);
         return pathPoints;
     }
 
 
+    private void pushPathToSmartDashboard(List<Waypoint> waypoints){
+        double xs[] = new double[waypoints.size()];
+        for(int i = 0; i< waypoints.size(); i++){
+            xs[i] = waypoints.get(i).position.lateral;
+        }
+        SmartDashboard.putNumberArray("Path X's", xs);
+
+        double ys[] = new double[waypoints.size()];
+        for(int i = 0; i< waypoints.size(); i++){
+            ys[i] = waypoints.get(i).position.forward;
+        }
+        SmartDashboard.putNumberArray("Path Y's", ys);
+    }
 
 }

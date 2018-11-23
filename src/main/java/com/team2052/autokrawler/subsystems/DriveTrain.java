@@ -63,6 +63,9 @@ public class DriveTrain {
         }
     }
 
+    public void stop(){
+        driveTank(0,0);
+    }
 
     public void drive(double tank, double turn) { //drives the motors depending
         // on the joystick values and the drive mode

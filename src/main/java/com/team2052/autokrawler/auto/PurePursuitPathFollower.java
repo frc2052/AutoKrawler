@@ -30,6 +30,7 @@ public class PurePursuitPathFollower{
     private Position2d lookaheadPoint;
     private Position2d currentPos;
 
+    private boolean ranOutOfPath = false;
     private double curvature;
 
     public void update() {
@@ -94,6 +95,7 @@ public class PurePursuitPathFollower{
 
             if (discriminent < 0){
                 System.out.println("NO INTERSECTION");
+                ranOutOfPath = true;
             }else{
                 discriminent = Math.sqrt(discriminent);
                 double t1 = (-b - discriminent)/(2*a);
@@ -159,13 +161,14 @@ public class PurePursuitPathFollower{
 
     public boolean isPathComplete(){
         if(currentPos != null) {
-            return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos) < 6; //check if we are 6 inches from last point
+            return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos) < 6 && ranOutOfPath; //check if we are 6 inches from last point and we are done with the path
         }else {
             return false;
         }
     }
 
     public void deletePath(){
+        driveTrain.stop(); //todo: rename method or move stoping
         path = null;
     }
 }

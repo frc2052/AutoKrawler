@@ -2,6 +2,7 @@ package com.team2052.autokrawler;
 
 
 import com.team2052.lib.Autonomous.Position2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotState{
 
@@ -48,6 +49,13 @@ public class RobotState{
 
     public void setVelocityInch(double deltaDistance){
         velocityInch = deltaDistance / Constants.Autonomous.kloopPeriodSec;
+    }
+
+    public void outputToSmartDashboard(){
+        SmartDashboard.putNumber("Robot Pos X", latestPosition.lateral);
+        SmartDashboard.putNumber("Robot Pos Y", latestPosition.forward);
+        SmartDashboard.putNumber("Robot Pos Angle", latestPosition.heading);
+        SmartDashboard.putNumber("Robot Velocity", velocityInch);
     }
 }
 
