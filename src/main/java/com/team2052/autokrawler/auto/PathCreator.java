@@ -130,6 +130,12 @@ public class PathCreator {
             ys[i] = waypoints.get(i).position.forward;
         }
         SmartDashboard.putNumberArray("Path Y's", ys);
+
+        double vels[] = new double[waypoints.size()];
+        for(int i = 0; i< waypoints.size(); i++){
+            vels[i] = waypoints.get(i).velocity;
+        }
+        SmartDashboard.putNumberArray("Path Vel's", vels);
     }
 
 }

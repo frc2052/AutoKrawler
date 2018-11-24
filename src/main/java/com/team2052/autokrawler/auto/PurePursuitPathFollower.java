@@ -116,7 +116,7 @@ public class PurePursuitPathFollower{
     /**
      * find the curvature of the circle that the robot must follow to get to the look ahead point
      */
-    private void findCurvature(){
+    private void findCurvature(){ //todo: does this treat forward like an x axis
 
         double a = -Math.tan(currentPos.heading);
         double b = 1;
@@ -139,7 +139,7 @@ public class PurePursuitPathFollower{
         System.out.println("Vel" + robotState.getVelocityInch());
         double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
         double velocity = robotState.getVelocityInch() +  deltaVelocity;
-        double leftWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2; //todo: figure this out or redo
+        double leftWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
         double rightWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
 
         double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity;
