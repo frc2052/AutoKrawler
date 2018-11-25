@@ -78,12 +78,12 @@ public class PathCreator {
         //set curvature
         for(int i = 1; i < pathPoints.size()-1; i++) {
 
-            double x1 = 0.0001 + pathPoints.get(i).position.lateral; //add a small number to stop a division by 0
-            double y1 = pathPoints.get(i).position.forward;
-            double x2 = pathPoints.get(i - 1).position.lateral;
-            double y2 = pathPoints.get(i - 1).position.forward;
-            double x3 = pathPoints.get(i + 1).position.lateral;
-            double y3 = pathPoints.get(i + 1).position.forward;
+            double x1 = 0.0001 + pathPoints.get(i).position.forward; //add a small number to stop a division by 0 //todo: x was lateral, changed to forward. double check
+            double y1 = pathPoints.get(i).position.lateral;
+            double x2 = pathPoints.get(i - 1).position.forward;
+            double y2 = pathPoints.get(i - 1).position.lateral;
+            double x3 = pathPoints.get(i + 1).position.forward;
+            double y3 = pathPoints.get(i + 1).position.lateral;
 
 
             double k1 = 0.5 * (x1 * x1 + y1 * y1 - x2 * x2 - y2 * y2) / (x1 - x2);
@@ -111,23 +111,23 @@ public class PathCreator {
         System.out.println("CREATED PATH");
 
         for(int i = 0; i < pathPoints.size(); i++){
-            System.out.println("path points: x: " + pathPoints.get(i).position.lateral + "y: " + pathPoints.get(i).position.forward);
+            System.out.println("path points: x: " + pathPoints.get(i).position.forward + "y: " + pathPoints.get(i).position.lateral); //todo: swapped forward/lateral
         }
         pushPathToSmartDashboard(pathPoints);
         return pathPoints;
     }
 
 
-    private void pushPathToSmartDashboard(List<Waypoint> waypoints){
+    private void pushPathToSmartDashboard(List<Waypoint> waypoints){ //todo: swapped forward/lateral
         double xs[] = new double[waypoints.size()];
         for(int i = 0; i< waypoints.size(); i++){
-            xs[i] = waypoints.get(i).position.lateral;
+            xs[i] = waypoints.get(i).position.forward;
         }
         SmartDashboard.putNumberArray("Path X's", xs);
 
         double ys[] = new double[waypoints.size()];
         for(int i = 0; i< waypoints.size(); i++){
-            ys[i] = waypoints.get(i).position.forward;
+            ys[i] = waypoints.get(i).position.lateral;
         }
         SmartDashboard.putNumberArray("Path Y's", ys);
 
