@@ -87,7 +87,7 @@ public class PathCreator {
             double x3 = pathPoints.get(i + 1).position.forward;
             double y3 = pathPoints.get(i + 1).position.lateral;
 
-
+/*
             double k1 = 0.5 * (x1 * x1 + y1 * y1 - x2 * x2 - y2 * y2) / (x1 - x2);
             double k2 = (y1 - y2) / (x1 - x2);
             double b = 0.5 * (x2 * x2 - 2 * x2 * k1 + y2 * y2 - x3 * x3 + 2 * x3 * k1 - y3 * y3) / (x3 * k2 - y3 + y2 - x2 * k2);
@@ -99,7 +99,73 @@ public class PathCreator {
             } else {
                 pathPoints.get(i).curvature = 1 / r;
             }
-            System.out.println("RRRR: " + r);
+            */
+
+            double bi1x = (x2 + x1)/2;
+            double bi1y = (y2 + y1)/2;
+            double bi2x = (x3 + x2)/2;
+            double bi2y = (y3 + y2)/2;
+
+            double cx = 0;
+            double cy = 0;
+            if(x2-x1 == 0){
+                if(x3-x2 == 0){
+                    pathPoints.get(i).curvature = 0;
+                }else{
+
+                    cx = bi1x;
+                    cy = -((x3 -x2)/y3-y2) * (bi1x - bi2x) + bi2y;
+
+                }
+            }else{
+                if(x3-x2 == 0){
+                    cx = bi2x;
+                    cy = -((x2 -x1)/y2-y1) * (bi2x - bi1x) + bi1y;
+                }else {
+                    if ((y2 - y1)/(x2 - x1) == (y3 - y2)/(x3 - x2)){
+                        pathPoints.get(i).curvature = 0;
+                    } else {
+
+                        //point slope form of perindicular bisector y-yb = m(x - xd)
+
+                        double m1 = -(x2 - x1)/(y2 - y1);
+                        double xd1 = bi1x;
+                        double yb1 = bi1y;
+
+                        double m2 = -(x2 - x1)/(y2 - y1);
+                        double xd2 = bi1x;
+                        double yb2 = bi1y;
+
+
+                        //standard form of the same bisectors ax + by = c
+                        double a1 = -m1;
+                        double b1 = 1;
+                        double c1 = -m1 * xd1 + yb1;
+
+                        double a2 = -m2;
+                        double b2 = 1;
+                        double c2 = -m2 * xd2 + yb2;
+
+
+                        double delta = a1 * b2 - a2 * b1;
+
+                        if (delta == 0){
+                            //parallel
+                        }
+
+
+                        cx = (b2 * c1 - b1 * c2) / delta;
+                        cy = (a1 * c2 - a2 * c1) / delta;
+                    }
+                }
+            }
+
+            //find distance
+            if(cx != 0 || cy != 0){
+                double r = Math.sqrt(Math.pow(cx - x1, 2) + Math.pow(cy - y1, 2));
+                pathPoints.get(i).curvature = 1 / r;
+            }
+
             System.out.println("MINIMUM OF: " + (Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature) + " , " + pathPoints.get(i).velocity);
             pathPoints.get(i).velocity = Math.min(Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature, pathPoints.get(i).velocity);
 
