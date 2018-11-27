@@ -63,9 +63,10 @@ public class PathCreator {
             System.out.println("Vector x2: " + dir.x + "Vector y2: " + dir.y);
 
             System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).position.lateral + "y: " + pathPoints.get(pathPoints.size()-1).position.forward);
-            for(int j = 0; j < numOfPts; j++){ 
-                pathPoints.add(pathPoints.size(), new Waypoint(pathPoints.get(pathPoints.size()-1).position.translateBy(new Position2d(dir.y, dir.x)),wayPoints.get(i).velocity)); //forward is x todo: check velocity math
-                System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).position.lateral + "y: " + pathPoints.get(pathPoints.size()-1).position.forward);
+            for(int j = 0; j < numOfPts; j++){
+
+                pathPoints.add(pathPoints.size(), new Waypoint(pathPoints.get(pathPoints.size()-1).position.translateBy(new Position2d(dir.y, dir.x)), wayPoints.get(i-1).velocity)); //forward is x todo: check velocity math
+                System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).position.lateral + "y: " + pathPoints.get(pathPoints.size()-1).position.forward + " vel: " + wayPoints.get(i-1).velocity);
             }
         }
 
@@ -75,6 +76,7 @@ public class PathCreator {
             pathPoints.get(i).distance = pathPoints.get(i-1).distance + segmentDistance;
         }
 
+        System.out.println("WAYPOINY VEL:" + pathPoints.get(1).velocity); //todo: check if the points are in a line before hand
         //set curvature
         for(int i = 1; i < pathPoints.size()-1; i++) {
 
@@ -92,15 +94,18 @@ public class PathCreator {
             double a = k1 - k2 * b;
             double r = Math.sqrt(Math.pow(x1 - a, 2) + Math.pow(y1 - b, 2));
 
-            if (r == Double.NaN) { //can get 1/infinity which returns NaN and means its a straight line
+            if (r == Double.NaN || r == Double.POSITIVE_INFINITY || r == Double.NEGATIVE_INFINITY || r == 0) { //can get 1/infinity which returns NaN and means its a straight line
                 pathPoints.get(i).curvature = 0;
             } else {
                 pathPoints.get(i).curvature = 1 / r;
             }
+            System.out.println("RRRR: " + r);
+            System.out.println("MINIMUM OF: " + (Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature) + " , " + pathPoints.get(i).velocity);
+            pathPoints.get(i).velocity = Math.min(Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature, pathPoints.get(i).velocity);
 
-            pathPoints.get(i).velocity = Math.min(Constants.Autonomous.kturnSpeed /r, pathPoints.get(i).velocity);
         }
 
+        pushPathToSmartDashboard(pathPoints);
         //use kinematics to go backward through the path to calculate deceleration and set velocity accordingly
         pathPoints.get(pathPoints.size()-1).velocity = 0;
 
@@ -111,9 +116,9 @@ public class PathCreator {
         System.out.println("CREATED PATH");
 
         for(int i = 0; i < pathPoints.size(); i++){
-            System.out.println("path points: x: " + pathPoints.get(i).position.forward + "y: " + pathPoints.get(i).position.lateral); //todo: swapped forward/lateral
+            System.out.println("path points: x: " + pathPoints.get(i).position.forward + "y: " + pathPoints.get(i).position.lateral + " vel: " + pathPoints.get(i).velocity); //todo: swapped forward/lateral
         }
-        pushPathToSmartDashboard(pathPoints);
+        //pushPathToSmartDashboard(pathPoints);
         return pathPoints;
     }
 
