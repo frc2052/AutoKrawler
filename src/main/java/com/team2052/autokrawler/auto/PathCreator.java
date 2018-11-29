@@ -76,16 +76,16 @@ public class PathCreator {
             pathPoints.get(i).distance = pathPoints.get(i-1).distance + segmentDistance;
         }
 
-        System.out.println("WAYPOINY VEL:" + pathPoints.get(1).velocity); //todo: check if the points are in a line before hand
+        System.out.println("WAYPOINY VEL:" + pathPoints.get(1).velocity);
         //set curvature
         for(int i = 1; i < pathPoints.size()-1; i++) {
 
-            double x1 = 0.0001 + pathPoints.get(i).position.forward; //add a small number to stop a division by 0 //todo: x was lateral, changed to forward. double check
-            double y1 = pathPoints.get(i).position.lateral;
-            double x2 = pathPoints.get(i - 1).position.forward;
-            double y2 = pathPoints.get(i - 1).position.lateral;
-            double x3 = pathPoints.get(i + 1).position.forward;
-            double y3 = pathPoints.get(i + 1).position.lateral;
+            double x1 = 0.0001 + pathPoints.get(i).position.lateral; //add a small number to stop a division by 0 //todo: xys
+            double y1 = pathPoints.get(i).position.forward;
+            double x2 = pathPoints.get(i - 1).position.lateral;
+            double y2 = pathPoints.get(i - 1).position.forward;
+            double x3 = pathPoints.get(i + 1).position.lateral;
+            double y3 = pathPoints.get(i + 1).position.forward;
 
 /*
             double k1 = 0.5 * (x1 * x1 + y1 * y1 - x2 * x2 - y2 * y2) / (x1 - x2);
@@ -108,6 +108,8 @@ public class PathCreator {
 
             double cx = 0;
             double cy = 0;
+
+            double r;
             if(x2-x1 == 0){
                 if(x3-x2 == 0){
                     pathPoints.get(i).curvature = 0;
@@ -116,11 +118,17 @@ public class PathCreator {
                     cx = bi1x;
                     cy = -((x3 -x2)/y3-y2) * (bi1x - bi2x) + bi2y;
 
+                    r = Math.sqrt(Math.pow(cx - x1, 2) + Math.pow(cy - y1, 2));
+                    pathPoints.get(i).curvature = 1 / r;
+
                 }
             }else{
                 if(x3-x2 == 0){
                     cx = bi2x;
                     cy = -((x2 -x1)/y2-y1) * (bi2x - bi1x) + bi1y;
+
+                    r = Math.sqrt(Math.pow(cx - x1, 2) + Math.pow(cy - y1, 2));
+                    pathPoints.get(i).curvature = 1 / r;
                 }else {
                     if ((y2 - y1)/(x2 - x1) == (y3 - y2)/(x3 - x2)){
                         pathPoints.get(i).curvature = 0;
@@ -156,19 +164,23 @@ public class PathCreator {
 
                         cx = (b2 * c1 - b1 * c2) / delta;
                         cy = (a1 * c2 - a2 * c1) / delta;
+
+                        r = Math.sqrt(Math.pow(cx - x1, 2) + Math.pow(cy - y1, 2));
+                        pathPoints.get(i).curvature = 1 / r;
                     }
                 }
             }
 
-            //find distance
-            if(cx != 0 || cy != 0){
-                double r = Math.sqrt(Math.pow(cx - x1, 2) + Math.pow(cy - y1, 2));
-                pathPoints.get(i).curvature = 1 / r;
+            if (pathPoints.get(i).curvature == 0){
+                pathPoints.get(i).velocity = pathPoints.get(i).velocity;
+            }else {
+                System.out.println("MINIMUM OF: " + (Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature) + " , " + pathPoints.get(i).velocity);
+                pathPoints.get(i).velocity = Math.min(Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature, pathPoints.get(i).velocity);
             }
 
-            System.out.println("MINIMUM OF: " + (Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature) + " , " + pathPoints.get(i).velocity);
-            pathPoints.get(i).velocity = Math.min(Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature, pathPoints.get(i).velocity);
-
+            if (pathPoints.get(i).velocity > Constants.Autonomous.kMaxVelocity){
+                pathPoints.get(i).velocity = Constants.Autonomous.kMaxVelocity;
+            }
         }
 
         pushPathToSmartDashboard(pathPoints);
@@ -182,23 +194,23 @@ public class PathCreator {
         System.out.println("CREATED PATH");
 
         for(int i = 0; i < pathPoints.size(); i++){
-            System.out.println("path points: x: " + pathPoints.get(i).position.forward + "y: " + pathPoints.get(i).position.lateral + " vel: " + pathPoints.get(i).velocity); //todo: swapped forward/lateral
+            System.out.println("path points: x: " + pathPoints.get(i).position.lateral + "y: " + pathPoints.get(i).position.forward + " vel: " + pathPoints.get(i).velocity); //todo: xys
         }
         //pushPathToSmartDashboard(pathPoints);
         return pathPoints;
     }
 
 
-    private void pushPathToSmartDashboard(List<Waypoint> waypoints){ //todo: swapped forward/lateral
+    private void pushPathToSmartDashboard(List<Waypoint> waypoints){ //todo: xys
         double xs[] = new double[waypoints.size()];
         for(int i = 0; i< waypoints.size(); i++){
-            xs[i] = waypoints.get(i).position.forward;
+            xs[i] = waypoints.get(i).position.lateral;
         }
         SmartDashboard.putNumberArray("Path X's", xs);
 
         double ys[] = new double[waypoints.size()];
         for(int i = 0; i< waypoints.size(); i++){
-            ys[i] = waypoints.get(i).position.lateral;
+            ys[i] = waypoints.get(i).position.forward;
         }
         SmartDashboard.putNumberArray("Path Y's", ys);
 

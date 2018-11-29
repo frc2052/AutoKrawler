@@ -32,7 +32,7 @@ public class FollowPathAction implements Action{
 
     @Override
     public void update() {
-        //pathFollower.update();
+        pathFollower.update();
     }
 
     public enum Direction{

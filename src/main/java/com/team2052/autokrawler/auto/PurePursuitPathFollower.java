@@ -116,19 +116,19 @@ public class PurePursuitPathFollower{
     /**
      * find the curvature of the circle that the robot must follow to get to the look ahead point
      */
-    private void findCurvature(){ //todo: does this treat forward like an x axis
+    private void findCurvature(){ //todo: does this treat forward like an x axis swapped x &ys
 
         double a = -Math.tan(currentPos.heading);
         double b = 1;
-        double c = Math.tan(currentPos.heading) * currentPos.lateral - currentPos.forward;
+        double c = Math.tan(currentPos.heading) * currentPos.forward - currentPos.lateral;
 
-        double x = Math.abs(a * lookaheadPoint.lateral + b * lookaheadPoint.forward + c)/ Math.sqrt(a*a + b*b);
+        double x = Math.abs(a * lookaheadPoint.forward + b * lookaheadPoint.lateral + c)/ Math.sqrt(a*a + b*b);
 
 
         double side = Math.signum(Math.sin(currentPos.heading) * (lookaheadPoint.lateral - currentPos.lateral) - Math.cos(currentPos.heading) * (lookaheadPoint.forward - currentPos.forward));
 
         curvature = side * ((2*x)/ (Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance));
-        System.out.println("curvature: " + curvature);
+        System.out.println("curvature: " + curvature + " X: " + x);
     }
 
     /**
@@ -139,8 +139,8 @@ public class PurePursuitPathFollower{
         System.out.println("Vel" + robotState.getVelocityInch());
         double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
         double velocity = robotState.getVelocityInch() +  deltaVelocity;
-        double leftWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
-        double rightWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
+        double leftWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
+        double rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
 
         double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity;
         double rightFeedForward = Constants.Autonomous.kV * rightWheelVel + Constants.Autonomous.kA * deltaVelocity ;
@@ -161,7 +161,8 @@ public class PurePursuitPathFollower{
 
     public boolean isPathComplete(){
         if(currentPos != null) {
-            return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos) < 6 && ranOutOfPath; //check if we are 6 inches from last point and we are done with the path
+            System.out.println("distence from end: " + Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos));
+            return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos) < 9 || ranOutOfPath; //check if we are 6 inches from last point and we are done with the path
         }else {
             return false;
         }

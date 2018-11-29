@@ -25,11 +25,11 @@ public class Constants {
         public static final double kturnSpeed = 3.0; //constant from 1-5     higher = faster
 
         public static final double kMaxVelocity = 10 * 12; //10 * 12
-        public static final double kMaxAccel = 12.0;///TESTTTTTT
+        public static final double kMaxAccel = 20.0;///TESTTTTTT
         public static final long kloopPeriodMs = 10;
         public static final double kloopPeriodSec = kloopPeriodMs/1000.0; //int devision
 
-        public static final double kLookaheadDistance = 12; //12-25
+        public static final double kLookaheadDistance = 16; //12-25
         public static final double kTrackWidth = 25;
         public static final double kV = 1/kMaxVelocity;
         public static final double kA = 0;
