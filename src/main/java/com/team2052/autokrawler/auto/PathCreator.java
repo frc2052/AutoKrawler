@@ -57,8 +57,12 @@ public class PathCreator {
             System.out.println("Vector x: " + dir.x + "Vector y: " + dir.y);
             int numOfPts = (int)(mag/Constants.Autonomous.kMinPointSpacing);
 
-            dir.x = (dir.x/mag) * Constants.Autonomous.kMinPointSpacing;
-            dir.y = (dir.y/mag) * Constants.Autonomous.kMinPointSpacing;
+            if(numOfPts<1){
+                numOfPts = 1;
+            }
+            dir.x = (dir.x / mag) * (mag / numOfPts);
+            dir.y = (dir.y / mag) * (mag / numOfPts);
+
 
             System.out.println("Vector x2: " + dir.x + "Vector y2: " + dir.y);
 
@@ -76,23 +80,22 @@ public class PathCreator {
             pathPoints.get(i).distance = pathPoints.get(i-1).distance + segmentDistance;
         }
 
-        System.out.println("WAYPOINY VEL:" + pathPoints.get(1).velocity);
         //set curvature
         for(int i = 1; i < pathPoints.size()-1; i++) {
 
-            double x1 = 0.0001 + pathPoints.get(i).position.lateral; //add a small number to stop a division by 0 //todo: xys
-            double y1 = pathPoints.get(i).position.forward;
-            double x2 = pathPoints.get(i - 1).position.lateral;
-            double y2 = pathPoints.get(i - 1).position.forward;
-            double x3 = pathPoints.get(i + 1).position.lateral;
-            double y3 = pathPoints.get(i + 1).position.forward;
+            double thisx = pathPoints.get(i).position.lateral; //todo: xys
+            double thisy = pathPoints.get(i).position.forward;
+            double lastx = pathPoints.get(i - 1).position.lateral;
+            double lasty = pathPoints.get(i - 1).position.forward;
+            double nextx = pathPoints.get(i + 1).position.lateral;
+            double nexty = pathPoints.get(i + 1).position.forward;
 
 /*
-            double k1 = 0.5 * (x1 * x1 + y1 * y1 - x2 * x2 - y2 * y2) / (x1 - x2);
-            double k2 = (y1 - y2) / (x1 - x2);
-            double b = 0.5 * (x2 * x2 - 2 * x2 * k1 + y2 * y2 - x3 * x3 + 2 * x3 * k1 - y3 * y3) / (x3 * k2 - y3 + y2 - x2 * k2);
+            double k1 = 0.5 * (thisx * thisx + thisy * thisy - lastx * lastx - lasty * lasty) / (thisx - lastx);
+            double k2 = (thisy - lasty) / (thisx - lastx);
+            double b = 0.5 * (lastx * lastx - 2 * lastx * k1 + lasty * lasty - nextx * nextx + 2 * nextx * k1 - nexty * nexty) / (nextx * k2 - nexty + lasty - lastx * k2);
             double a = k1 - k2 * b;
-            double r = Math.sqrt(Math.pow(x1 - a, 2) + Math.pow(y1 - b, 2));
+            double r = Math.sqrt(Math.pow(thisx - a, 2) + Math.pow(thisy - b, 2));
 
             if (r == Double.NaN || r == Double.POSITIVE_INFINITY || r == Double.NEGATIVE_INFINITY || r == 0) { //can get 1/infinity which returns NaN and means its a straight line
                 pathPoints.get(i).curvature = 0;
@@ -101,48 +104,61 @@ public class PathCreator {
             }
             */
 
-            double bi1x = (x2 + x1)/2;
-            double bi1y = (y2 + y1)/2;
-            double bi2x = (x3 + x2)/2;
-            double bi2y = (y3 + y2)/2;
+            double bi1x = (lastx + thisx)/2;
+            double bi1y = (lasty + thisy)/2;
+            double bi2x = (nextx + lastx)/2;
+            double bi2y = (nexty + lasty)/2;
 
             double cx = 0;
             double cy = 0;
 
             double r;
-            if(x2-x1 == 0){
-                if(x3-x2 == 0){
+
+            //when two lines of opposite directions are put in a slower speed is not calculated. ex: spd:25 pts: (0,0)(0,6)(0,0) speed is 25 for all three.
+            System.out.println("(x:" + thisx + "," + thisy + ")");
+            if(lasty == thisy){
+                if(nexty == thisy){
+                    System.out.println("straight both lines horizontal");
                     pathPoints.get(i).curvature = 0;
                 }else{
 
-                    cx = bi1x;
-                    cy = -((x3 -x2)/y3-y2) * (bi1x - bi2x) + bi2y;
+                    System.out.println("curved with 1st line horizontal");
 
-                    r = Math.sqrt(Math.pow(cx - x1, 2) + Math.pow(cy - y1, 2));
+                    cx = bi1x;
+                    cy = -((nextx -thisx)/(nexty-thisy)) * (bi2x - bi1x) + bi2y;
+
+                    r = Math.sqrt(Math.pow(cx - thisx, 2) + Math.pow(cy - thisy, 2));
+
+                    System.out.println("R: " + r + "cx: " + cx + "thisx: " +  thisx + "cy: " + cy +"thisy: " + thisy);
                     pathPoints.get(i).curvature = 1 / r;
 
                 }
             }else{
-                if(x3-x2 == 0){
+                if(nexty == thisy){
+                    System.out.println("curved with 2nd line horizontal");
                     cx = bi2x;
-                    cy = -((x2 -x1)/y2-y1) * (bi2x - bi1x) + bi1y;
+                    cy = -((thisx-lastx)/(thisy-lasty)) * (bi1x - bi2x) + bi1y;
 
-                    r = Math.sqrt(Math.pow(cx - x1, 2) + Math.pow(cy - y1, 2));
+                    r = Math.sqrt(Math.pow(cx - thisx, 2) + Math.pow(cy - thisy, 2));
+                    System.out.println("R: " + r + "cx: " + cx + "thisx: " +  thisx + "cy: " + cy +"thisy: " + thisy);
                     pathPoints.get(i).curvature = 1 / r;
+
                 }else {
-                    if ((y2 - y1)/(x2 - x1) == (y3 - y2)/(x3 - x2)){
+                    if ((thisy - lasty)/(thisx - lastx) == (nexty - thisy)/(nextx - thisx)){
+                        System.out.println("straight both lines equal slopes");
                         pathPoints.get(i).curvature = 0;
                     } else {
+                        System.out.println("Curved with both lines real slopes");
 
-                        //point slope form of perindicular bisector y-yb = m(x - xd)
+                        //point slope form of perpindicular bisector y-yb = m(x - xd)
 
-                        double m1 = -(x2 - x1)/(y2 - y1);
+                        double m1 = -(thisx - lastx)/(thisy - lasty);
                         double xd1 = bi1x;
                         double yb1 = bi1y;
 
-                        double m2 = -(x2 - x1)/(y2 - y1);
-                        double xd2 = bi1x;
-                        double yb2 = bi1y;
+                        double m2 = -(nextx - thisx)/(nexty - thisy);
+                        double xd2 = bi2x;
+                        double yb2 = bi2y;
 
 
                         //standard form of the same bisectors ax + by = c
@@ -165,7 +181,8 @@ public class PathCreator {
                         cx = (b2 * c1 - b1 * c2) / delta;
                         cy = (a1 * c2 - a2 * c1) / delta;
 
-                        r = Math.sqrt(Math.pow(cx - x1, 2) + Math.pow(cy - y1, 2));
+                        r = Math.sqrt(Math.pow(cx - thisx, 2) + Math.pow(cy - thisy, 2));
+                        System.out.println("R: " + r + "cx: " + cx + "thisx: " +  thisx + "cy: " + cy +"thisy: " + thisy);
                         pathPoints.get(i).curvature = 1 / r;
                     }
                 }
@@ -174,8 +191,9 @@ public class PathCreator {
             if (pathPoints.get(i).curvature == 0){
                 pathPoints.get(i).velocity = pathPoints.get(i).velocity;
             }else {
-                System.out.println("MINIMUM OF: " + (Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature) + " , " + pathPoints.get(i).velocity);
-                pathPoints.get(i).velocity = Math.min(Constants.Autonomous.kturnSpeed * pathPoints.get(i).curvature, pathPoints.get(i).velocity);
+                System.out.println("Curvature: " + pathPoints.get(i).curvature);
+                System.out.println("MINIMUM OF: " + (Constants.Autonomous.kturnSpeed / pathPoints.get(i).curvature) + " , " + pathPoints.get(i).velocity);
+                pathPoints.get(i).velocity = Math.min(Constants.Autonomous.kturnSpeed / pathPoints.get(i).curvature, pathPoints.get(i).velocity);
             }
 
             if (pathPoints.get(i).velocity > Constants.Autonomous.kMaxVelocity){
@@ -183,11 +201,12 @@ public class PathCreator {
             }
         }
 
-        pushPathToSmartDashboard(pathPoints);
+        //pushPathToSmartDashboard(pathPoints);
         //use kinematics to go backward through the path to calculate deceleration and set velocity accordingly
-        pathPoints.get(pathPoints.size()-1).velocity = 0;
+        pathPoints.get(pathPoints.size()-3).velocity = 0;
 
-        for (int i = 2; i < pathPoints.size()+1; i++){
+        //i=4 because we extended the path by 2 points and we want size()-i to be equal to the second to last point
+        for (int i = 4; i < pathPoints.size()+1; i++){
             double d = Position2d.distanceFormula(pathPoints.get(pathPoints.size()-i+1).position,pathPoints.get(pathPoints.size()-i).position);
             pathPoints.get(pathPoints.size()-i).velocity = Math.min(pathPoints.get(pathPoints.size()-i).velocity, Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).velocity,2) + 2 * Constants.Autonomous.kMaxAccel * d));
         }
