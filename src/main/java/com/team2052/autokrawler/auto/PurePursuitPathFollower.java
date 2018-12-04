@@ -7,6 +7,7 @@ import com.team2052.lib.Autonomous.Path;
 import com.team2052.lib.Autonomous.Position2d;
 import com.team2052.lib.Autonomous.RateLimiter;
 import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Created by KnightKrawler on 9/12/2018.
@@ -38,15 +39,16 @@ public class PurePursuitPathFollower{
             currentPos = robotState.getLatestPosition();//where I actually am
             updateClosestPointIndex();
             findLookAheadPoint();
-            findCurvature();
+            findCurvature(); //todo: rename method
             driveWheels();
+            SmartDashboard.putNumber("Closestpoint", closestPointIndex);
         }else{
             System.out.println("NO PATH ERROR");
         }
     }
 
     public void start(Path path) {
-        closestPointIndex = 0;
+        closestPointIndex = 1;
         System.out.println("creating path");
         this.path = new Path(pathCreator.createPath(path.getWaypoints())); //more detailed path from smaller path
     }
@@ -56,16 +58,17 @@ public class PurePursuitPathFollower{
      * find the point on the path that is the closest to the robot.
      */
     private void updateClosestPointIndex(){
-        double distance = 0;
+        double distance;
         double closestDistance = Position2d.distanceFormula(path.getWaypoints().get(closestPointIndex).position, currentPos);
 
         for(int i = closestPointIndex; i < path.getWaypoints().size(); i++){
             distance = Position2d.distanceFormula(path.getWaypoints().get(i).position, currentPos);
-            if (distance < closestDistance){
+            System.out.println("DISTANCE: " + distance);
+            if (distance <= closestDistance){
                 closestDistance = distance;
             }else{
-                closestPointIndex = i;
-                System.out.println("closest = " + i);
+                closestPointIndex = i-1;
+                System.out.println("closest = " + (i-1));
                 break;
             }
         }
@@ -162,7 +165,7 @@ public class PurePursuitPathFollower{
     public boolean isPathComplete(){
         if(currentPos != null) {
             System.out.println("distence from end: " + Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos));
-            return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos) < 9 || ranOutOfPath; //check if we are 6 inches from last point and we are done with the path
+            return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 3).position, currentPos) < 9 || ranOutOfPath; //check if we are 6 inches from last point and we are done with the path
         }else {
             return false;
         }

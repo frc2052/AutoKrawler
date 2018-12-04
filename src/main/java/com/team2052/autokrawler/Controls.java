@@ -27,7 +27,7 @@ public class Controls {
     } //these return the values for the joysticks for other classes
 
     public double getTurnJoy1() {
-        return leftPrimaryStick.getX();
+        return rightPrimaryStick.getX();
     }
 
     public double getTankJoy2() {

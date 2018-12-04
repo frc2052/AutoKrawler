@@ -215,7 +215,7 @@ public class PathCreator {
         for(int i = 0; i < pathPoints.size(); i++){
             System.out.println("path points: x: " + pathPoints.get(i).position.lateral + "y: " + pathPoints.get(i).position.forward + " vel: " + pathPoints.get(i).velocity); //todo: xys
         }
-        //pushPathToSmartDashboard(pathPoints);
+        pushPathToSmartDashboard(pathPoints);
         return pathPoints;
     }
 
