@@ -39,7 +39,7 @@ public class PurePursuitPathFollower{
             currentPos = robotState.getLatestPosition();//where I actually am
             updateClosestPointIndex();
             findLookAheadPoint();
-            findCurvature(); //todo: rename method
+            findCurvature(); 
             driveWheels();
             SmartDashboard.putNumber("Closestpoint", closestPointIndex);
         }else{

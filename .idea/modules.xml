@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AutoKrawler.iml" filepath="$PROJECT_DIR$/.idea/modules/AutoKrawler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AutoKrawler.iml" filepath="$PROJECT_DIR$/AutoKrawler.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AutoKrawler_main.iml" filepath="$PROJECT_DIR$/.idea/modules/AutoKrawler_main.iml" group="AutoKrawler" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AutoKrawler_test.iml" filepath="$PROJECT_DIR$/.idea/modules/AutoKrawler_test.iml" group="AutoKrawler" />
     </modules>

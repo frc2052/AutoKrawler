@@ -3,6 +3,7 @@ package com.team2052.autokrawler;
 
 import com.team2052.autokrawler.auto.AutoModeRunner;
 import com.team2052.autokrawler.auto.AutoModeSelector;
+import com.team2052.autokrawler.auto.PurePursuitPathFollower;
 import com.team2052.autokrawler.subsystems.DriveTrain;
 import com.team2052.lib.Autonomous.Path;
 import com.team2052.lib.ControlLoop;
@@ -16,6 +17,7 @@ public class Robot extends IterativeRobot {
     private RobotStateCalculator robotStateCalculator = RobotStateCalculator.getInstance();
     private AutoModeRunner autoModeRunner = new AutoModeRunner();
     private ControlLoop controlLoop = new ControlLoop(Constants.Autonomous.kloopPeriodSec);
+    private PurePursuitPathFollower purePursuitPathFollower = PurePursuitPathFollower.getInstance();
 
 
     private Path testPath;
@@ -32,7 +34,9 @@ public class Robot extends IterativeRobot {
         System.out.println("DISABLE INIT");
         autoModeRunner.stop();
         controlLoop.stop();
+        purePursuitPathFollower.deletePath();
         driveTrain.driveTank(0,0);
+
     }
 
     @Override
