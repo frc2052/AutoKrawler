@@ -39,7 +39,7 @@ public class PurePursuitPathFollower{
             currentPos = robotState.getLatestPosition();//where I actually am
             updateClosestPointIndex();
             findLookAheadPoint();
-            findCurvature(); 
+            findCurvature();
             driveWheels();
             SmartDashboard.putNumber("Closestpoint", closestPointIndex);
         }else{
@@ -111,6 +111,7 @@ public class PurePursuitPathFollower{
                 if (t2 >= 0 && t1 <=1){
                     t = t2;
                 }
+                System.out.println("% between 2 points lookahead pt is/ T: " + t);
             }
         }
         lookaheadPoint = new Position2d(path.getWaypoints().get(i).position.forward + lineSegment.y * t, path.getWaypoints().get(i).position.lateral + lineSegment.x * t);
