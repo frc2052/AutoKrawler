@@ -34,6 +34,8 @@ public class PurePursuitPathFollower{
     private boolean ranOutOfPath = false;
     private double curvature;
 
+    private boolean wantPathNull = false;
+
     public void update() {
         if (path != null) {
             currentPos = robotState.getLatestPosition();//where I actually am
@@ -42,12 +44,17 @@ public class PurePursuitPathFollower{
             findCurvature();
             driveWheels();
             SmartDashboard.putNumber("Closestpoint", closestPointIndex);
+            if(wantPathNull){
+                driveTrain.stop();
+                path = null;
+            }
         }else{
-            System.out.println("NO PATH ERROR");
+            System.out.println("NO PATH");
         }
     }
 
     public void start(Path path) {
+        ranOutOfPath = false;
         closestPointIndex = 1;
         System.out.println("creating path");
         this.path = new Path(pathCreator.createPath(path.getWaypoints())); //more detailed path from smaller path
@@ -104,13 +111,18 @@ public class PurePursuitPathFollower{
                 double t1 = (-b - discriminent)/(2*a);
                 double t2 = (-b + discriminent)/(2*a);
 
-                if (t1 >= 0 && t2 <=1){
+                if (t2 >= 0 && t2 <=1){
+                    System.out.println("T IS T2");
+                    SmartDashboard.putString("T was not set","false");
+                    t = t2;
+                }else if (t1 >= 0 && t1 <=1){
+                    System.out.println("T IS T1");
+                    SmartDashboard.putString("T was not set","false");
                     t = t1;
+                }else if(distanceFromEnd()< 20){
+                    ranOutOfPath = true;
                 }
 
-                if (t2 >= 0 && t1 <=1){
-                    t = t2;
-                }
                 System.out.println("% between 2 points lookahead pt is/ T: " + t);
             }
         }
@@ -146,6 +158,18 @@ public class PurePursuitPathFollower{
         double leftWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
         double rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
 
+        //scale to stop wheels from driving to fast
+        double highestVel = 0.0;
+
+        highestVel = Math.max(highestVel, leftWheelVel);
+        highestVel = Math.max(highestVel,rightWheelVel);
+        if(highestVel > Constants.Autonomous.kMaxVelocity){
+            System.out.println(highestVel + " is Greater then " + Constants.Autonomous.kMaxVelocity);
+            double scaling = Constants.Autonomous.kMaxVelocity / highestVel;
+            leftWheelVel*=scaling;
+            rightWheelVel*=scaling;
+        }
+
         double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity;
         double rightFeedForward = Constants.Autonomous.kV * rightWheelVel + Constants.Autonomous.kA * deltaVelocity ;
         double leftFeedBack = Constants.Autonomous.kP * (leftWheelVel - robotState.getLeftVelocityInch());
@@ -165,15 +189,19 @@ public class PurePursuitPathFollower{
 
     public boolean isPathComplete(){
         if(currentPos != null) {
-            System.out.println("distence from end: " + Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos));
-            return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 3).position, currentPos) < 9 || ranOutOfPath; //check if we are 6 inches from last point and we are done with the path
+            System.out.println("distence from end: " + distanceFromEnd());
+            return distanceFromEnd() < 9 || ranOutOfPath || closestPointIndex == path.getWaypoints().size()- Constants.Autonomous.kNumOfFakePts; //check if we are 6 inches from last point and we are done with the path
         }else {
             return false;
         }
     }
 
     public void deletePath(){
-        driveTrain.stop(); //todo: rename method or move stoping
+        System.out.println("STOPPING AND DELETING PATH");
         path = null;
+    }
+
+    private double distanceFromEnd(){
+        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - Constants.Autonomous.kNumOfFakePts).position, currentPos);
     }
 }
