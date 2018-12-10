@@ -198,7 +198,7 @@ public class PurePursuitPathFollower{
 
     public void deletePath(){
         System.out.println("STOPPING AND DELETING PATH");
-        path = null;
+        wantPathNull = true;
     }
 
     private double distanceFromEnd(){
