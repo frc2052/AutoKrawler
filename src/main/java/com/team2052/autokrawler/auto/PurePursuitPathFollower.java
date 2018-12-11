@@ -34,8 +34,6 @@ public class PurePursuitPathFollower{
     private boolean ranOutOfPath = false;
     private double curvature;
 
-    private boolean wantPathNull = false;
-
     public void update() {
         if (path != null) {
             currentPos = robotState.getLatestPosition();//where I actually am
@@ -44,12 +42,7 @@ public class PurePursuitPathFollower{
             findCurvature();
             driveWheels();
             SmartDashboard.putNumber("DISTANCE", distanceFromEnd());
-            if(wantPathNull){
-                System.out.println("NULLING PATH BEACAUSE WANTPATH IS :" + wantPathNull);
-                driveTrain.stop();
-                path = null;
-
-            }
+            SmartDashboard.putNumber("CURVATUE", curvature);
         }else{
             System.out.println("NO PATH");
         }
@@ -57,7 +50,6 @@ public class PurePursuitPathFollower{
 
     public void start(Path path) {
         ranOutOfPath = false;
-        wantPathNull = false;
         lookaheadPoint = null;
         currentPos = null;
         curvature = 0;
@@ -126,8 +118,6 @@ public class PurePursuitPathFollower{
                     System.out.println("T IS T1");
                     SmartDashboard.putString("T was not set","false");
                     t = t1;
-                }else if(distanceFromEnd()< 20){
-                    ranOutOfPath = true;
                 }
 
                 System.out.println("% between 2 points lookahead pt is/ T: " + t);
@@ -148,7 +138,7 @@ public class PurePursuitPathFollower{
         double x = Math.abs(a * lookaheadPoint.forward + b * lookaheadPoint.lateral + c)/ Math.sqrt(a*a + b*b);
 
 
-        double side = Math.signum(Math.sin(currentPos.heading) * (lookaheadPoint.lateral - currentPos.lateral) - Math.cos(currentPos.heading) * (lookaheadPoint.forward - currentPos.forward));
+        double side = -Math.signum(Math.sin(currentPos.heading) * (lookaheadPoint.forward - currentPos.forward) - Math.cos(currentPos.heading) * (lookaheadPoint.lateral - currentPos.lateral)); //todo swapped forawrd/lateral
 
         curvature = side * ((2*x)/ (Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance));
         System.out.println("curvature: " + curvature + " X: " + x);
@@ -206,7 +196,7 @@ public class PurePursuitPathFollower{
     public void deletePath(){
         System.out.println("STOPPING AND DELETING PATH");
         driveTrain.stop();
-        wantPathNull = true;
+        path = null;
     }
 
     private double distanceFromEnd(){
