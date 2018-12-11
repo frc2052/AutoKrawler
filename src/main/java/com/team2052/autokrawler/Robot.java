@@ -25,7 +25,6 @@ public class Robot extends IterativeRobot {
     @Override
     public void robotInit() {
         controlLoop.addLoopable(robotStateCalculator);
-
         AutoModeSelector.putToSmartDashboard();
     }
 
@@ -34,13 +33,14 @@ public class Robot extends IterativeRobot {
         System.out.println("DISABLE INIT");
         autoModeRunner.stop();
         controlLoop.stop();
-        purePursuitPathFollower.deletePath();
         driveTrain.driveTank(0,0);
+        //purePursuitPathFollower.deletePath();
 
     }
 
     @Override
     public void autonomousInit() {
+        //purePursuitPathFollower.deletePath();
         controlLoop.start();
         driveTrain.zeroGyro();
         robotStateCalculator.resetRobotState();
@@ -56,7 +56,7 @@ public class Robot extends IterativeRobot {
         controlLoop.start();
         driveTrain.zeroGyro();
         robotStateCalculator.resetRobotState();
-
+        //purePursuitPathFollower.deletePath();
 
     }
 
@@ -65,7 +65,10 @@ public class Robot extends IterativeRobot {
 
 
     @Override
-    public void disabledPeriodic() { }
+    public void disabledPeriodic() {
+        autoModeRunner.stop();
+        controlLoop.stop();
+    }
     
     @Override
     public void autonomousPeriodic() {

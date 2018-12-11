@@ -39,18 +39,24 @@ public class PurePursuitPathFollower{
             currentPos = robotState.getLatestPosition();//where I actually am
             updateClosestPointIndex();
             findLookAheadPoint();
-            findCurvature(); 
+            findCurvature();
             driveWheels();
-            SmartDashboard.putNumber("Closestpoint", closestPointIndex);
+            SmartDashboard.putNumber("DISTANCE", distanceFromEnd());
+            SmartDashboard.putNumber("CURVATUE", curvature);
         }else{
-            System.out.println("NO PATH ERROR");
+            System.out.println("NO PATH");
         }
     }
 
     public void start(Path path) {
-        closestPointIndex = 1;
+        ranOutOfPath = false;
+        lookaheadPoint = null;
+        currentPos = null;
+        curvature = 0;
+        closestPointIndex = 0;
         System.out.println("creating path");
         this.path = new Path(pathCreator.createPath(path.getWaypoints())); //more detailed path from smaller path
+        System.out.println("created path");
     }
 
 
@@ -104,13 +110,17 @@ public class PurePursuitPathFollower{
                 double t1 = (-b - discriminent)/(2*a);
                 double t2 = (-b + discriminent)/(2*a);
 
-                if (t1 >= 0 && t2 <=1){
+                if (t2 >= 0 && t2 <=1){
+                    System.out.println("T IS T2");
+                    SmartDashboard.putString("T was not set","false");
+                    t = t2;
+                }else if (t1 >= 0 && t1 <=1){
+                    System.out.println("T IS T1");
+                    SmartDashboard.putString("T was not set","false");
                     t = t1;
                 }
 
-                if (t2 >= 0 && t1 <=1){
-                    t = t2;
-                }
+                System.out.println("% between 2 points lookahead pt is/ T: " + t);
             }
         }
         lookaheadPoint = new Position2d(path.getWaypoints().get(i).position.forward + lineSegment.y * t, path.getWaypoints().get(i).position.lateral + lineSegment.x * t);
@@ -128,7 +138,7 @@ public class PurePursuitPathFollower{
         double x = Math.abs(a * lookaheadPoint.forward + b * lookaheadPoint.lateral + c)/ Math.sqrt(a*a + b*b);
 
 
-        double side = Math.signum(Math.sin(currentPos.heading) * (lookaheadPoint.lateral - currentPos.lateral) - Math.cos(currentPos.heading) * (lookaheadPoint.forward - currentPos.forward));
+        double side = -Math.signum(Math.sin(currentPos.heading) * (lookaheadPoint.forward - currentPos.forward) - Math.cos(currentPos.heading) * (lookaheadPoint.lateral - currentPos.lateral)); //todo swapped forawrd/lateral
 
         curvature = side * ((2*x)/ (Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance));
         System.out.println("curvature: " + curvature + " X: " + x);
@@ -144,6 +154,18 @@ public class PurePursuitPathFollower{
         double velocity = robotState.getVelocityInch() +  deltaVelocity;
         double leftWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
         double rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
+
+        //scale to stop wheels from driving to fast
+        double highestVel = 0.0;
+
+        highestVel = Math.max(highestVel, leftWheelVel);
+        highestVel = Math.max(highestVel,rightWheelVel);
+        if(highestVel > Constants.Autonomous.kMaxVelocity){
+            System.out.println(highestVel + " is Greater then " + Constants.Autonomous.kMaxVelocity);
+            double scaling = Constants.Autonomous.kMaxVelocity / highestVel;
+            leftWheelVel*=scaling;
+            rightWheelVel*=scaling;
+        }
 
         double leftFeedForward = Constants.Autonomous.kV * leftWheelVel + Constants.Autonomous.kA * deltaVelocity;
         double rightFeedForward = Constants.Autonomous.kV * rightWheelVel + Constants.Autonomous.kA * deltaVelocity ;
@@ -163,16 +185,21 @@ public class PurePursuitPathFollower{
     }
 
     public boolean isPathComplete(){
-        if(currentPos != null) {
-            System.out.println("distence from end: " + Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 1).position, currentPos));
-            return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 3).position, currentPos) < 9 || ranOutOfPath; //check if we are 6 inches from last point and we are done with the path
+        if(currentPos != null && path != null) {
+            System.out.println("distence from end: " + distanceFromEnd());
+            return distanceFromEnd() < 9 || ranOutOfPath || closestPointIndex == path.getWaypoints().size()- Constants.Autonomous.kNumOfFakePts; //check if we are 6 inches from last point and we are done with the path
         }else {
             return false;
         }
     }
 
     public void deletePath(){
-        driveTrain.stop(); //todo: rename method or move stoping
+        System.out.println("STOPPING AND DELETING PATH");
+        driveTrain.stop();
         path = null;
+    }
+
+    private double distanceFromEnd(){
+        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 2).position, currentPos);
     }
 }

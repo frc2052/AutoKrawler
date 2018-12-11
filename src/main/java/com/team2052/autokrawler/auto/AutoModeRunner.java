@@ -35,4 +35,7 @@ public class AutoModeRunner {
         autoThread = null;
     }
 
+    public boolean isAutodone(){
+        return autoMode.isRunning();
+    }
 }

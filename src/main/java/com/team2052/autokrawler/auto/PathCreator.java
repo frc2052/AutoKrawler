@@ -30,13 +30,13 @@ public class PathCreator {
 
         wayPoints.get(wayPoints.size()-1).velocity = 0; //set the final point to 0 velocity
 
-        //extend path one lookahead distance away
+        //extend path 1.5 lookahead distance away
         Vector2d finalDir = new Vector2d();
         finalDir.x = wayPoints.get(wayPoints.size()-1).position.lateral - wayPoints.get(wayPoints.size()-2).position.lateral;
         finalDir.y = wayPoints.get(wayPoints.size()-1).position.forward - wayPoints.get(wayPoints.size()-2).position.forward;
         double finMag = finalDir.magnitude();
-        finalDir.x = (finalDir.x/finMag) * Constants.Autonomous.kLookaheadDistance;
-        finalDir.y = (finalDir.y/finMag) * Constants.Autonomous.kLookaheadDistance;
+        finalDir.x = (finalDir.x/finMag) * Constants.Autonomous.kLookaheadDistance * 1.5;
+        finalDir.y = (finalDir.y/finMag) * Constants.Autonomous.kLookaheadDistance * 1.5;
 
         wayPoints.add(wayPoints.size(), new Waypoint(new Position2d(wayPoints.get(wayPoints.size()-1).position.forward + finalDir.y, wayPoints.get(wayPoints.size()-1).position.lateral + finalDir.x), 0));
 
@@ -90,19 +90,6 @@ public class PathCreator {
             double nextx = pathPoints.get(i + 1).position.lateral;
             double nexty = pathPoints.get(i + 1).position.forward;
 
-/*
-            double k1 = 0.5 * (thisx * thisx + thisy * thisy - lastx * lastx - lasty * lasty) / (thisx - lastx);
-            double k2 = (thisy - lasty) / (thisx - lastx);
-            double b = 0.5 * (lastx * lastx - 2 * lastx * k1 + lasty * lasty - nextx * nextx + 2 * nextx * k1 - nexty * nexty) / (nextx * k2 - nexty + lasty - lastx * k2);
-            double a = k1 - k2 * b;
-            double r = Math.sqrt(Math.pow(thisx - a, 2) + Math.pow(thisy - b, 2));
-
-            if (r == Double.NaN || r == Double.POSITIVE_INFINITY || r == Double.NEGATIVE_INFINITY || r == 0) { //can get 1/infinity which returns NaN and means its a straight line
-                pathPoints.get(i).curvature = 0;
-            } else {
-                pathPoints.get(i).curvature = 1 / r;
-            }
-            */
 
             double bi1x = (lastx + thisx)/2;
             double bi1y = (lasty + thisy)/2;
