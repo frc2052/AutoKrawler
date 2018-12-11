@@ -29,7 +29,7 @@ public class AutoModeSelector {
         try {
             return sendableChooserAutoMode.getSelected();
         } catch (Exception exc) {
-            System.out.println("FAILED TO GET AUTO DEFINITION! Defaulting to Cross.");
+            System.out.println("FAILED TO GET AUTO DEFINITION! Defaulting to Cross."); //todo: wrong
             return  AutoModeDefinition.DONT_MOVE;
         }
     }
@@ -39,7 +39,7 @@ public class AutoModeSelector {
     public enum AutoModeDefinition
     {
         DONT_MOVE("Don't Move", DontMove.class),
-        TEST("test", Test.class)
+        TEST("Test", Test.class)
         ;
 
         //create a class variable type and check if it extends AutoMode. the name of this variable is clazz

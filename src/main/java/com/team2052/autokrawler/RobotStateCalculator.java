@@ -28,13 +28,13 @@ public class RobotStateCalculator implements ILoopable{
         deltaLeftInches = leftInches-pastLeftInches;
         deltaRightInches = rightInches-pastRightInches;
         deltaDistance = ((deltaLeftInches) + (deltaRightInches)) / 2;
-        double averageHeading = (radians + latestPosition.heading) / 2;
+        double averageHeading = (radians + latestPosition.getHeading()) / 2;
         pastRightInches = rightInches;
         pastLeftInches = leftInches;
 
-        latestPosition.forward = deltaDistance * Math.cos(averageHeading) + latestPosition.forward;
-        latestPosition.lateral = deltaDistance * Math.sin(averageHeading) + latestPosition.lateral;
-        latestPosition.heading = radians;
+        latestPosition.setForward(deltaDistance * Math.cos(averageHeading) + latestPosition.getForward());
+        latestPosition.setLateral(deltaDistance * Math.sin(averageHeading) + latestPosition.getLateral());
+        latestPosition.setHeading(radians);
 /*
         System.out.println("forward" + latestPosition.forward + "encoderInch: " + rightInches);
         System.out.println("lateral " + latestPosition.lateral);
@@ -58,7 +58,7 @@ public class RobotStateCalculator implements ILoopable{
         robotState.setLeftVelocityInch(deltaLeftInches);
         robotState.setRightVelocityInch(deltaRightInches);
         robotState.setLatestPosition(latestPosition);
-        timeSinceReset+= 0.01;
+        timeSinceReset+= 0.01; //todo: test if accurate
         robotState.setTimeSinceReset(timeSinceReset);
     }
 

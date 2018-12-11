@@ -35,6 +35,7 @@ public class PurePursuitPathFollower{
     private double curvature;
     private double leftWheelVel;
     private double rightWheelVel;
+    int l = 0; //todo: find a better way of printing once a second
 
     public void update() {
         if (path != null) {
@@ -43,6 +44,11 @@ public class PurePursuitPathFollower{
             findLookAheadPoint();
             findCurvature();
             driveWheels();
+            l++;
+            if(l>=100){
+                printAnUpdate();
+                l = 0;
+            }
         }else{
             System.out.println("NO PATH");
         }
@@ -65,16 +71,16 @@ public class PurePursuitPathFollower{
      */
     private void updateClosestPointIndex(){
         double distance;
-        double closestDistance = Position2d.distanceFormula(path.getWaypoints().get(closestPointIndex).position, currentPos);
+        double closestDistance = Position2d.distanceFormula(path.getWaypoints().get(closestPointIndex).getPosition(), currentPos);
 
         for(int i = closestPointIndex; i < path.getWaypoints().size(); i++){
-            distance = Position2d.distanceFormula(path.getWaypoints().get(i).position, currentPos);
-            System.out.println("DISTANCE: " + distance);
+            distance = Position2d.distanceFormula(path.getWaypoints().get(i).getPosition(), currentPos);
+            //System.out.println("DISTANCE: " + distance);
             if (distance <= closestDistance){
                 closestDistance = distance;
             }else{
                 closestPointIndex = i-1;
-                System.out.println("closest = " + (i-1));
+                //System.out.println("closest = " + (i-1));
                 break;
             }
         }
@@ -92,10 +98,10 @@ public class PurePursuitPathFollower{
         Vector2d lineSegment = new Vector2d();
 
         for( i = closestPointIndex; t == 0 && i < path.getWaypoints().size()-1; i++) {
-            // x = NextclosestPointX - closestPointX y = NextclosestPointY - closestPointY
-            lineSegment = new Vector2d(path.getWaypoints().get(i + 1).position.lateral - path.getWaypoints().get(i).position.lateral, path.getWaypoints().get(i + 1).position.forward - path.getWaypoints().get(i).position.forward);
+            // x = NextclosestPointX - closestPointX y = NextclosestPointY - closestPointY //todo: remove
+            lineSegment = new Vector2d(path.getWaypoints().get(i + 1).getPosition().getLateral() - path.getWaypoints().get(i).getPosition().getLateral(), path.getWaypoints().get(i + 1).getPosition().getForward() - path.getWaypoints().get(i).getPosition().getForward());
 
-            Vector2d robotToStartPoint = new Vector2d(path.getWaypoints().get(i).position.lateral - currentPos.lateral, path.getWaypoints().get(i).position.forward - currentPos.forward);
+            Vector2d robotToStartPoint = new Vector2d(path.getWaypoints().get(i).getPosition().getLateral() - currentPos.getLateral(), path.getWaypoints().get(i).getPosition().getForward() - currentPos.getForward());
 
             double a = dotProduct(lineSegment.x,lineSegment.y,lineSegment.x,lineSegment.y);
             double b = 2 * dotProduct(robotToStartPoint.x,robotToStartPoint.y,lineSegment.x,lineSegment.y);
@@ -111,46 +117,41 @@ public class PurePursuitPathFollower{
                 double t2 = (-b + discriminent)/(2*a);
 
                 if (t2 >= 0 && t2 <=1){
-                    System.out.println("T IS T2");
-                    SmartDashboard.putString("T was not set","false");
+                    //System.out.println("T IS T2");
                     t = t2;
                 }else if (t1 >= 0 && t1 <=1){
-                    System.out.println("T IS T1");
-                    SmartDashboard.putString("T was not set","false");
+                    //System.out.println("T IS T1");
                     t = t1;
                 }
 
-                System.out.println("% between 2 points lookahead pt is/ T: " + t);
+                //System.out.println("% between 2 points lookahead pt is/ T: " + t);
             }
         }
-        lookaheadPoint = new Position2d(path.getWaypoints().get(i).position.forward + lineSegment.y * t, path.getWaypoints().get(i).position.lateral + lineSegment.x * t);
+        lookaheadPoint = new Position2d(path.getWaypoints().get(i).getPosition().getForward() + lineSegment.y * t, path.getWaypoints().get(i).getPosition().getLateral() + lineSegment.x * t);
     }
 
     /**
      * find the curvature of the circle that the robot must follow to get to the look ahead point
      */
-    private void findCurvature(){ //todo: does this treat forward like an x axis swapped x &ys
+    private void findCurvature(){
 
-        double a = -Math.tan(currentPos.heading);
+        double a = -Math.tan(currentPos.getHeading());
         double b = 1;
-        double c = Math.tan(currentPos.heading) * currentPos.forward - currentPos.lateral;
+        double c = Math.tan(currentPos.getHeading()) * currentPos.getForward() - currentPos.getLateral();
 
-        double x = Math.abs(a * lookaheadPoint.forward + b * lookaheadPoint.lateral + c)/ Math.sqrt(a*a + b*b);
+        double x = Math.abs(a * lookaheadPoint.getForward() + b * lookaheadPoint.getLateral() + c)/ Math.sqrt(a*a + b*b);
 
 
-        double side = -Math.signum(Math.sin(currentPos.heading) * (lookaheadPoint.forward - currentPos.forward) - Math.cos(currentPos.heading) * (lookaheadPoint.lateral - currentPos.lateral)); //todo swapped forawrd/lateral
+        double side = -Math.signum(Math.sin(currentPos.getHeading()) * (lookaheadPoint.getForward() - currentPos.getForward()) - Math.cos(currentPos.getHeading()) * (lookaheadPoint.getLateral() - currentPos.getLateral())); //todo swapped forawrd/lateral
 
         curvature = side * ((2*x)/ (Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance));
-        System.out.println("curvature: " + curvature + " X: " + x);
     }
 
     /**
      * calculate the velocit in percent of the left and right wheels
      */
     private void driveWheels(){
-        System.out.println("Closest V: " + path.getWaypoints().get(closestPointIndex).velocity );
-        System.out.println("Vel" + robotState.getVelocityInch());
-        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
+        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).getVelocity() - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
         double velocity = robotState.getVelocityInch() +  deltaVelocity;
         leftWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
         rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
@@ -161,7 +162,6 @@ public class PurePursuitPathFollower{
         highestVel = Math.max(highestVel, leftWheelVel);
         highestVel = Math.max(highestVel,rightWheelVel);
         if(highestVel > Constants.Autonomous.kMaxVelocity){
-            System.out.println(highestVel + " is Greater then " + Constants.Autonomous.kMaxVelocity);
             double scaling = Constants.Autonomous.kMaxVelocity / highestVel;
             leftWheelVel*=scaling;
             rightWheelVel*=scaling;
@@ -175,7 +175,7 @@ public class PurePursuitPathFollower{
         double leftSpeed = leftFeedForward + leftFeedBack;
         double rightSpeed = rightFeedForward + rightFeedBack;
 
-        System.out.println("leftvel: " + leftWheelVel + "rightvel: " + rightWheelVel + "vel: " + velocity + "dv:" + deltaVelocity + "tarVel: " + path.getWaypoints().get(closestPointIndex).velocity);
+        //System.out.println("leftvel: " + leftWheelVel + "rightvel: " + rightWheelVel + "vel: " + velocity + "dv:" + deltaVelocity + "tarVel: " + path.getWaypoints().get(closestPointIndex).getVelocity());
 
         driveTrain.driveTank(leftSpeed, rightSpeed);
     }
@@ -186,8 +186,7 @@ public class PurePursuitPathFollower{
 
     public boolean isPathComplete(){
         if(currentPos != null && path != null) {
-            System.out.println("distence from end: " + distanceFromEnd());
-            return distanceFromEnd() < 9 || ranOutOfPath || closestPointIndex == path.getWaypoints().size()- Constants.Autonomous.kNumOfFakePts; //check if we are 6 inches from last point and we are done with the path
+            return getDistanceFromEnd() < 9 || ranOutOfPath || closestPointIndex == path.getWaypoints().size()- Constants.Autonomous.kNumOfFakePts; //check if we are 6 inches from last point and we are done with the path
         }else {
             return false;
         }
@@ -199,18 +198,18 @@ public class PurePursuitPathFollower{
         path = null;
     }
 
-    private double distanceFromEnd(){
-        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 2).position, currentPos);
+    private double getDistanceFromEnd(){
+        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 2).getPosition(), currentPos);
     }
 
     private void pushToSmartDashboard(){
-        SmartDashboard.putNumber("DistanceFromEnd", distanceFromEnd());
+        SmartDashboard.putNumber("DistanceFromEnd", getDistanceFromEnd());
         SmartDashboard.putNumber("Curvature", curvature);
         SmartDashboard.putNumber("LeftWheelVel", leftWheelVel);
         SmartDashboard.putNumber("RightWheelVel", rightWheelVel);
     }
 
     private void printAnUpdate(){
-        System.out.println("L-Vel: ");
+        System.out.println("L-Vel: " + leftWheelVel + " R-Vel " + rightWheelVel + " curv: " + curvature + " in. Left: " + getDistanceFromEnd() + " P. Vel: " + path.getWaypoints().get(closestPointIndex).getVelocity());
     }
 }

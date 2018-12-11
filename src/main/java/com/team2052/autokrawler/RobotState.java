@@ -53,9 +53,9 @@ public class RobotState{
     }
 
     public void outputToSmartDashboard(){
-        SmartDashboard.putNumber("Robot Pos X", latestPosition.lateral);
-        SmartDashboard.putNumber("Robot Pos Y", latestPosition.forward);
-        SmartDashboard.putNumber("Robot Pos Angle", latestPosition.heading);
+        SmartDashboard.putNumber("Robot Pos X", latestPosition.getLateral());
+        SmartDashboard.putNumber("Robot Pos Y", latestPosition.getForward());
+        SmartDashboard.putNumber("Robot Pos Angle", latestPosition.getHeading());
         SmartDashboard.putNumber("Robot Velocity", velocityInch);
     }
 

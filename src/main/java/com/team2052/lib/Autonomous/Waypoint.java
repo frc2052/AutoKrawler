@@ -5,10 +5,10 @@ package com.team2052.lib.Autonomous;
  */
 public class Waypoint {
 
-    public Position2d position;
-    public double velocity;
-    public double curvature; //1/radius of circle created by point ahead and behind
-    public double distance; //todo: does this need to be apart of Waypoint
+    private Position2d position;
+    private double velocity;
+    private double curvature; //1/radius of circle created by point ahead and behind
+    private double distance;
 
     /**
      * @param position in inches
@@ -19,6 +19,38 @@ public class Waypoint {
         this.velocity = velocity;
         distance = 0;
         curvature = 0;
+    }
+
+    public Position2d getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position2d position) {
+        this.position = position;
+    }
+
+    public double getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(double velocity) {
+        this.velocity = velocity;
+    }
+
+    public double getCurvature() {
+        return curvature;
+    }
+
+    public void setCurvature(double curvature) {
+        this.curvature = curvature;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }
 
