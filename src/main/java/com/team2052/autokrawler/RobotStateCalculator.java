@@ -15,6 +15,8 @@ public class RobotStateCalculator implements ILoopable{
 
     private Position2d latestPosition = new Position2d();
 
+    private double timeSinceReset = 0;
+
     private DriveTrain driveTrain = DriveTrain.getInstance();
     private RobotState robotState = RobotState.getInstance();
 
@@ -56,6 +58,8 @@ public class RobotStateCalculator implements ILoopable{
         robotState.setLeftVelocityInch(deltaLeftInches);
         robotState.setRightVelocityInch(deltaRightInches);
         robotState.setLatestPosition(latestPosition);
+        timeSinceReset+= 0.01;
+        robotState.setTimeSinceReset(timeSinceReset);
     }
 
     @Override

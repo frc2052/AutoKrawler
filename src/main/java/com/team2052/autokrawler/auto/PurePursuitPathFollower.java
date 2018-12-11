@@ -33,6 +33,8 @@ public class PurePursuitPathFollower{
 
     private boolean ranOutOfPath = false;
     private double curvature;
+    private double leftWheelVel;
+    private double rightWheelVel;
 
     public void update() {
         if (path != null) {
@@ -41,8 +43,6 @@ public class PurePursuitPathFollower{
             findLookAheadPoint();
             findCurvature();
             driveWheels();
-            SmartDashboard.putNumber("DISTANCE", distanceFromEnd());
-            SmartDashboard.putNumber("CURVATUE", curvature);
         }else{
             System.out.println("NO PATH");
         }
@@ -152,8 +152,8 @@ public class PurePursuitPathFollower{
         System.out.println("Vel" + robotState.getVelocityInch());
         double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).velocity - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
         double velocity = robotState.getVelocityInch() +  deltaVelocity;
-        double leftWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
-        double rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
+        leftWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
+        rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
 
         //scale to stop wheels from driving to fast
         double highestVel = 0.0;
@@ -194,12 +194,23 @@ public class PurePursuitPathFollower{
     }
 
     public void deletePath(){
-        System.out.println("STOPPING AND DELETING PATH");
+        //System.out.println("Stopping and deleting path");
         driveTrain.stop();
         path = null;
     }
 
     private double distanceFromEnd(){
         return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 2).position, currentPos);
+    }
+
+    private void pushToSmartDashboard(){
+        SmartDashboard.putNumber("DistanceFromEnd", distanceFromEnd());
+        SmartDashboard.putNumber("Curvature", curvature);
+        SmartDashboard.putNumber("LeftWheelVel", leftWheelVel);
+        SmartDashboard.putNumber("RightWheelVel", rightWheelVel);
+    }
+
+    private void printAnUpdate(){
+        System.out.println("L-Vel: ");
     }
 }

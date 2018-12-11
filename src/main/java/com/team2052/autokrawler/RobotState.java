@@ -12,6 +12,7 @@ public class RobotState{
     private double rightVelocityInch = 0;
     private double leftVelocityInch = 0;
     private double velocityInch = 0;
+    private double timeSinceReset = 0;
 
     private static RobotState singleRobotStateInstance = new RobotState();
     public static RobotState getInstance() { return singleRobotStateInstance; }
@@ -56,6 +57,14 @@ public class RobotState{
         SmartDashboard.putNumber("Robot Pos Y", latestPosition.forward);
         SmartDashboard.putNumber("Robot Pos Angle", latestPosition.heading);
         SmartDashboard.putNumber("Robot Velocity", velocityInch);
+    }
+
+    public void setTimeSinceReset(double timeSinceReset){
+        this.timeSinceReset = timeSinceReset;
+    }
+
+    public double getTimeSinceReset(){
+        return timeSinceReset;
     }
 }
 
