@@ -43,10 +43,12 @@ public class PurePursuitPathFollower{
             findLookAheadPoint();
             findCurvature();
             driveWheels();
-            SmartDashboard.putNumber("Closestpoint", closestPointIndex);
+            SmartDashboard.putNumber("DISTANCE", distanceFromEnd());
             if(wantPathNull){
+                System.out.println("NULLING PATH BEACAUSE WANTPATH IS :" + wantPathNull);
                 driveTrain.stop();
                 path = null;
+
             }
         }else{
             System.out.println("NO PATH");
@@ -55,9 +57,14 @@ public class PurePursuitPathFollower{
 
     public void start(Path path) {
         ranOutOfPath = false;
-        closestPointIndex = 1;
+        wantPathNull = false;
+        lookaheadPoint = null;
+        currentPos = null;
+        curvature = 0;
+        closestPointIndex = 0;
         System.out.println("creating path");
         this.path = new Path(pathCreator.createPath(path.getWaypoints())); //more detailed path from smaller path
+        System.out.println("created path");
     }
 
 
@@ -188,7 +195,7 @@ public class PurePursuitPathFollower{
     }
 
     public boolean isPathComplete(){
-        if(currentPos != null) {
+        if(currentPos != null && path != null) {
             System.out.println("distence from end: " + distanceFromEnd());
             return distanceFromEnd() < 9 || ranOutOfPath || closestPointIndex == path.getWaypoints().size()- Constants.Autonomous.kNumOfFakePts; //check if we are 6 inches from last point and we are done with the path
         }else {
@@ -198,10 +205,11 @@ public class PurePursuitPathFollower{
 
     public void deletePath(){
         System.out.println("STOPPING AND DELETING PATH");
+        driveTrain.stop();
         wantPathNull = true;
     }
 
     private double distanceFromEnd(){
-        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - Constants.Autonomous.kNumOfFakePts).position, currentPos);
+        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 2).position, currentPos);
     }
 }
