@@ -15,7 +15,7 @@ public class FollowPathAction implements Action{
 
     @Override
     public void done() {
-        pathFollower.deletePath();
+        pathFollower.stopPathFollower();
         System.out.println("Done With Path");
 
     }

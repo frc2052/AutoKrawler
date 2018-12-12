@@ -34,13 +34,13 @@ public class Robot extends IterativeRobot {
         autoModeRunner.stop();
         controlLoop.stop();
         driveTrain.driveTank(0,0);
-        //purePursuitPathFollower.deletePath();
+        //purePursuitPathFollower.stopPathFollower();
 
     }
 
     @Override
     public void autonomousInit() {
-        //purePursuitPathFollower.deletePath();
+        //purePursuitPathFollower.stopPathFollower();
         controlLoop.start();
         driveTrain.zeroGyro();
         robotStateCalculator.resetRobotState();
@@ -56,7 +56,7 @@ public class Robot extends IterativeRobot {
         controlLoop.start();
         driveTrain.zeroGyro();
         robotStateCalculator.resetRobotState();
-        //purePursuitPathFollower.deletePath();
+        //purePursuitPathFollower.stopPathFollower();
 
     }
 

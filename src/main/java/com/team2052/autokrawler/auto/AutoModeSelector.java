@@ -29,7 +29,7 @@ public class AutoModeSelector {
         try {
             return sendableChooserAutoMode.getSelected();
         } catch (Exception exc) {
-            System.out.println("FAILED TO GET AUTO DEFINITION! Defaulting to Cross."); //todo: wrong
+            System.out.println("FAILED TO GET AUTO DEFINITION! Defaulting to Don't_Move.");
             return  AutoModeDefinition.DONT_MOVE;
         }
     }

@@ -10,7 +10,14 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * Created by KnightKrawler on 9/12/2018.
+ * This class takes a path and has the robot follow it via pure persuit path following.
+ * this means the robot has a point on the path that is a set distance away from the center of the robot
+ * that it will try to curve into.
+ *
+ * @see #start(Path)
+ * @see #update()
+ *
+ * @author Ian
  */
 public class PurePursuitPathFollower{
 
@@ -37,37 +44,57 @@ public class PurePursuitPathFollower{
     private double rightWheelVel;
     int l = 0; //todo: find a better way of printing once a second
 
+    /**
+     * Update: runs all code for driving a path and sends updates to smartDashboard and the console
+     *  @see #updateClosestPointIndex()
+     *  @see #findLookAheadPoint()
+     *  @see #findDriveCurvature()
+     *  @see #driveWheels()
+     */
     public void update() {
         if (path != null) {
-            currentPos = robotState.getLatestPosition();//where I actually am
+            currentPos = robotState.getLatestPosition();
             updateClosestPointIndex();
             findLookAheadPoint();
-            findCurvature();
+            findDriveCurvature();
             driveWheels();
             l++;
-            if(l>=100){
+            if(l>=50){ //run every half a second. this should be looped 100 times a second
                 printAnUpdate();
                 l = 0;
             }
+            pushToSmartDashboard();
         }else{
             System.out.println("NO PATH");
         }
     }
 
+    /**
+     * Start takes a path and runs it through the path creator class to set it up for following
+     * @see #resetPathFollower()
+     * @see PathCreator
+     * @param path is a path created in an automode class
+     */
     public void start(Path path) {
-        ranOutOfPath = false;
-        lookaheadPoint = null;
-        currentPos = null;
-        curvature = 0;
-        closestPointIndex = 0;
+        resetPathFollower();
         System.out.println("creating path");
         this.path = new Path(pathCreator.createPath(path.getWaypoints())); //more detailed path from smaller path
         System.out.println("created path");
     }
 
+    /**
+     * resets all class level variables
+     */
+    private void resetPathFollower(){
+        ranOutOfPath = false;
+        lookaheadPoint = null;
+        currentPos = null;
+        curvature = 0;
+        closestPointIndex = 0;
+    }
 
     /**
-     * find the point on the path that is the closest to the robot.
+     * find the point on the path that is the closest to the robot by checking distances from all points.
      */
     private void updateClosestPointIndex(){
         double distance;
@@ -89,6 +116,7 @@ public class PurePursuitPathFollower{
 
     /**
      * find a point that is both intersecting a circle radius kLookaheadDistance on the robot and the path
+     *
      */
     private void findLookAheadPoint(){
 
@@ -117,13 +145,10 @@ public class PurePursuitPathFollower{
                 double t2 = (-b + discriminent)/(2*a);
 
                 if (t2 >= 0 && t2 <=1){
-                    //System.out.println("T IS T2");
                     t = t2;
                 }else if (t1 >= 0 && t1 <=1){
-                    //System.out.println("T IS T1");
                     t = t1;
                 }
-
                 //System.out.println("% between 2 points lookahead pt is/ T: " + t);
             }
         }
@@ -133,7 +158,7 @@ public class PurePursuitPathFollower{
     /**
      * find the curvature of the circle that the robot must follow to get to the look ahead point
      */
-    private void findCurvature(){
+    private void findDriveCurvature(){
 
         double a = -Math.tan(currentPos.getHeading());
         double b = 1;
@@ -142,13 +167,13 @@ public class PurePursuitPathFollower{
         double x = Math.abs(a * lookaheadPoint.getForward() + b * lookaheadPoint.getLateral() + c)/ Math.sqrt(a*a + b*b);
 
 
-        double side = -Math.signum(Math.sin(currentPos.getHeading()) * (lookaheadPoint.getForward() - currentPos.getForward()) - Math.cos(currentPos.getHeading()) * (lookaheadPoint.getLateral() - currentPos.getLateral())); //todo swapped forawrd/lateral
+        double side = -Math.signum(Math.sin(currentPos.getHeading()) * (lookaheadPoint.getForward() - currentPos.getForward()) - Math.cos(currentPos.getHeading()) * (lookaheadPoint.getLateral() - currentPos.getLateral()));
 
         curvature = side * ((2*x)/ (Constants.Autonomous.kLookaheadDistance * Constants.Autonomous.kLookaheadDistance));
     }
 
     /**
-     * calculate the velocit in percent of the left and right wheels
+     * calculate the velocity in inches for the left and right wheels then turn it into percent
      */
     private void driveWheels(){
         double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).getVelocity() - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
@@ -156,7 +181,7 @@ public class PurePursuitPathFollower{
         leftWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
         rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
 
-        //scale to stop wheels from driving to fast
+        //if velocity gets to fast scale it down so a wheel is not told to drive faster then 100%
         double highestVel = 0.0;
 
         highestVel = Math.max(highestVel, leftWheelVel);
@@ -180,28 +205,52 @@ public class PurePursuitPathFollower{
         driveTrain.driveTank(leftSpeed, rightSpeed);
     }
 
+    /**
+     * find the dot product of  two vectors
+     *
+     * @param x1 vector1 x
+     * @param y1 vector1 y
+     * @param x2 vector2 x
+     * @param y2 vector2 y
+     * @return the dot product
+     */
     public double dotProduct(double x1, double y1, double x2, double y2){
         return x1 * x2 + y1 * y2;
     }
 
+    /**
+     * Check if the robot is done with the path
+     * @return true if the robot is done with the path
+     */
     public boolean isPathComplete(){
         if(currentPos != null && path != null) {
-            return getDistanceFromEnd() < 9 || ranOutOfPath || closestPointIndex == path.getWaypoints().size()- Constants.Autonomous.kNumOfFakePts; //check if we are 6 inches from last point and we are done with the path
+            return getDistanceFromEnd() < Constants.Autonomous.kRequiredDistanceFromEnd || ranOutOfPath || closestPointIndex == path.getWaypoints().size()- Constants.Autonomous.kNumOfFakePts; //check if we are 6 inches from last point and we are done with the path
         }else {
             return false;
         }
     }
 
-    public void deletePath(){
-        //System.out.println("Stopping and deleting path");
+    /**
+     * Stops the path following and sets path to null
+     */
+    public void stopPathFollower(){
+        System.out.println("Stopping and deleting path");
         driveTrain.stop();
         path = null;
+        ranOutOfPath = true;
     }
 
+    /**
+     * Checks the distance from the robot to the last point
+     * @return distance in inches from last point
+     */
     private double getDistanceFromEnd(){
-        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 2).getPosition(), currentPos);
+        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 2).getPosition(), currentPos); //todo: make sure -2 is correct
     }
 
+    /**
+     * put values to smartdashboard
+     */
     private void pushToSmartDashboard(){
         SmartDashboard.putNumber("DistanceFromEnd", getDistanceFromEnd());
         SmartDashboard.putNumber("Curvature", curvature);
@@ -209,6 +258,9 @@ public class PurePursuitPathFollower{
         SmartDashboard.putNumber("RightWheelVel", rightWheelVel);
     }
 
+    /**
+     * prints and update to the console
+     */
     private void printAnUpdate(){
         System.out.println("L-Vel: " + leftWheelVel + " R-Vel " + rightWheelVel + " curv: " + curvature + " in. Left: " + getDistanceFromEnd() + " P. Vel: " + path.getWaypoints().get(closestPointIndex).getVelocity());
     }

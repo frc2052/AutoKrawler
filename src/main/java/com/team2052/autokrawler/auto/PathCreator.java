@@ -11,25 +11,43 @@ import java.util.List;
 
 public class PathCreator {
 
+    List<Waypoint> pathPoints = new ArrayList<Waypoint>();
 
     /**
-     * from added waypoints:
-     *
-     * 1.add more points between existing points
-     *
-     * 2. calculate distances for all points
-     *
-     * 3 calculate curvature at each point
+     * create a path that can be followed from a path created in an automode class
+     * @param wayPoints
+     * @return a list of waypoints that is more populated and have distances, velocities and curvature set
      */
     public List<Waypoint> createPath(List<Waypoint> wayPoints){
 
+        //print origional points
         /*
         for(int i = 0; i < wayPoints.size(); i++){
             System.out.println("path points: x: " + wayPoints.get(i).getPosition().getLateral() + "y: " + wayPoints.get(i).getPosition().getForward());
         }*/
-        List<Waypoint> pathPoints = new ArrayList<Waypoint>();
+        pathPoints = null;
+        addPoints(wayPoints);
+        setDistances();
+        setCurvature();
+        calculateDeceleration();
 
-        wayPoints.get(wayPoints.size()-1).setVelocity(0); //set the final point to 0 velocity
+        //print the final points
+        /*
+        for(int i = 0; i < pathPoints.size(); i++){
+            System.out.println("path points: x: " + pathPoints.get(i).getPosition().getLateral() + "y: " + pathPoints.get(i).getPosition().getForward() + " vel: " + pathPoints.get(i).getVelocity());
+        }*/
+        pushPathToSmartDashboard(pathPoints);
+        return pathPoints;
+    }
+
+    /**
+     * First extend the path based on the lookahead distance
+     * then add points between the original points that are less then 6 inches away from each other
+     * @param wayPoints pass the original waypoints
+     */
+    private void addPoints(List<Waypoint> wayPoints){
+        //set the final point to 0 calculateDeceleration
+        wayPoints.get(wayPoints.size()-1).setVelocity(0);
 
         //extend path 1.5 lookahead distance away
         Vector2d finalDir = new Vector2d();
@@ -41,12 +59,6 @@ public class PathCreator {
 
         wayPoints.add(wayPoints.size(), new Waypoint(new Position2d(wayPoints.get(wayPoints.size()-1).getPosition().getForward() + finalDir.y, wayPoints.get(wayPoints.size()-1).getPosition().getLateral() + finalDir.x), 0));
 
-        /*System.out.println("ADDED LAST POINT");
-        for(int i = 0; i < wayPoints.size(); i++){
-            System.out.println("path points: x: " + wayPoints.get(i).getPosition().getLateral() + "y: " + wayPoints.get(i).getPosition().getForward());
-        }*/
-
-        //System.out.println("adding more points");
         //create more points
         pathPoints.add(pathPoints.size(), wayPoints.get(0));
         for(int i = 1; i < wayPoints.size(); i++){
@@ -63,27 +75,35 @@ public class PathCreator {
             dir.x = (dir.x / mag) * (mag / numOfPts);
             dir.y = (dir.y / mag) * (mag / numOfPts);
 
-
-            //System.out.println("Vector x2: " + dir.x + "Vector y2: " + dir.y);
-
             //System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).getPosition().getLateral() + "y: " + pathPoints.get(pathPoints.size()-1).getPosition().getForward());
             for(int j = 0; j < numOfPts; j++){
 
-                pathPoints.add(pathPoints.size(), new Waypoint(pathPoints.get(pathPoints.size()-1).getPosition().translateBy(new Position2d(dir.y, dir.x)), wayPoints.get(i-1).getVelocity())); //forward is x todo: check velocity math
-               //System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).getPosition().getLateral() + "y: " + pathPoints.get(pathPoints.size()-1).getPosition().getForward() + " vel: " + wayPoints.get(i-1).getVelocity());
+                pathPoints.add(pathPoints.size(), new Waypoint(pathPoints.get(pathPoints.size()-1).getPosition().translateBy(new Position2d(dir.y, dir.x)), wayPoints.get(i-1).getVelocity()));
+                //System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).getPosition().getLateral() + "y: " + pathPoints.get(pathPoints.size()-1).getPosition().getForward() + " vel: " + wayPoints.get(i-1).getVelocity());
             }
         }
+    }
 
-        //set distances
+    /**
+     * set each point an estimate to how far they are along the path
+     */
+    private void setDistances(){
         for(int i = 1; i < pathPoints.size(); i++){
             double segmentDistance = Position2d.distanceFormula(pathPoints.get(i-1).getPosition(),pathPoints.get(i).getPosition());
             pathPoints.get(i).setDistance(pathPoints.get(i-1).getDistance() + segmentDistance);
         }
+    }
 
-        //set curvature
+    /**
+     * Calculate how curved the path is at each point.
+     * to do this create a circle from the point ahead and the point behind using perpendicular bisectors
+     * must make sure to not davide by 0 if line is vertical
+     * the curvature is 1/radius of this circle
+     */
+    private void setCurvature(){
         for(int i = 1; i < pathPoints.size()-1; i++) {
 
-            double thisx = pathPoints.get(i).getPosition().getLateral(); //todo: xys
+            double thisx = pathPoints.get(i).getPosition().getLateral();
             double thisy = pathPoints.get(i).getPosition().getForward();
             double lastx = pathPoints.get(i - 1).getPosition().getLateral();
             double lasty = pathPoints.get(i - 1).getPosition().getForward();
@@ -108,15 +128,10 @@ public class PathCreator {
                     //System.out.println("straight both lines horizontal");
                     pathPoints.get(i).setCurvature(0);
                 }else{
-
                     //System.out.println("curved with 1st line horizontal");
-
                     cx = bi1x;
                     cy = -((nextx -thisx)/(nexty-thisy)) * (bi2x - bi1x) + bi2y;
-
                     r = Math.sqrt(Math.pow(cx - thisx, 2) + Math.pow(cy - thisy, 2));
-
-                    //System.out.println("R: " + r + "cx: " + cx + "thisx: " +  thisx + "cy: " + cy +"thisy: " + thisy);
                     pathPoints.get(i).setCurvature(1 / r);
 
                 }
@@ -125,9 +140,7 @@ public class PathCreator {
                     //System.out.println("curved with 2nd line horizontal");
                     cx = bi2x;
                     cy = -((thisx-lastx)/(thisy-lasty)) * (bi1x - bi2x) + bi1y;
-
                     r = Math.sqrt(Math.pow(cx - thisx, 2) + Math.pow(cy - thisy, 2));
-                    //System.out.println("R: " + r + "cx: " + cx + "thisx: " +  thisx + "cy: " + cy +"thisy: " + thisy);
                     pathPoints.get(i).setCurvature(1 / r);
 
                 }else {
@@ -136,9 +149,7 @@ public class PathCreator {
                         pathPoints.get(i).setCurvature(0);
                     } else {
                         //System.out.println("Curved with both lines real slopes");
-
                         //point slope form of perpindicular bisector y-yb = m(x - xd)
-
                         double m1 = -(thisx - lastx)/(thisy - lasty);
                         double xd1 = bi1x;
                         double yb1 = bi1y;
@@ -146,8 +157,6 @@ public class PathCreator {
                         double m2 = -(nextx - thisx)/(nexty - thisy);
                         double xd2 = bi2x;
                         double yb2 = bi2y;
-
-
                         //standard form of the same bisectors ax + by = c
                         double a1 = -m1;
                         double b1 = 1;
@@ -157,13 +166,11 @@ public class PathCreator {
                         double b2 = 1;
                         double c2 = -m2 * xd2 + yb2;
 
-
                         double delta = a1 * b2 - a2 * b1;
 
                         if (delta == 0){
                             //parallel
                         }
-
 
                         cx = (b2 * c1 - b1 * c2) / delta;
                         cy = (a1 * c2 - a2 * c1) / delta;
@@ -185,8 +192,13 @@ public class PathCreator {
                 pathPoints.get(i).setVelocity(Constants.Autonomous.kMaxVelocity);
             }
         }
+    }
 
-        //use kinematics to go backward through the path to calculate deceleration and set velocity accordingly
+    /**
+     * the robot limits its acceleration but will start decelerating to late.
+     * use kinimatics to lower the velocity so the robot trys to stop when it gets to a point
+     */
+    private void calculateDeceleration(){
         pathPoints.get(pathPoints.size()-3).setVelocity(0);
 
         //i=4 because we extended the path by 2 points and we want size()-i to be equal to the second to last point
@@ -194,17 +206,13 @@ public class PathCreator {
             double d = Position2d.distanceFormula(pathPoints.get(pathPoints.size()-i+1).getPosition(),pathPoints.get(pathPoints.size()-i).getPosition());
             pathPoints.get(pathPoints.size()-i).setVelocity(Math.min(pathPoints.get(pathPoints.size()-i).getVelocity(), Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).getVelocity(),2) + 2 * Constants.Autonomous.kMaxAccel * d)));
         }
-        //System.out.println("CREATED PATH");
-        /*
-        for(int i = 0; i < pathPoints.size(); i++){
-            System.out.println("path points: x: " + pathPoints.get(i).getPosition().getLateral() + "y: " + pathPoints.get(i).getPosition().getForward() + " vel: " + pathPoints.get(i).getVelocity()); //todo: xys
-        }*/
-        pushPathToSmartDashboard(pathPoints);
-        return pathPoints;
     }
 
-
-    private void pushPathToSmartDashboard(List<Waypoint> waypoints){ //todo: xys
+    /**
+     * Put the waypoints on smartdashboard
+     * @param waypoints the list to be put on smartdashboards
+     */
+    private void pushPathToSmartDashboard(List<Waypoint> waypoints){
         double xs[] = new double[waypoints.size()];
         for(int i = 0; i< waypoints.size(); i++){
             xs[i] = waypoints.get(i).getPosition().getLateral();
