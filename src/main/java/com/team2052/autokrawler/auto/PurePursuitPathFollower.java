@@ -42,7 +42,7 @@ public class PurePursuitPathFollower{
     private double curvature;
     private double leftWheelVel;
     private double rightWheelVel;
-    int l = 0; //todo: find a better way of printing once a second
+    int loops = 0; //todo: find a better way of printing once a second
 
     /**
      * Update: runs all code for driving a path and sends updates to smartDashboard and the console
@@ -58,10 +58,10 @@ public class PurePursuitPathFollower{
             findLookAheadPoint();
             findDriveCurvature();
             driveWheels();
-            l++;
-            if(l>=50){ //run every half a second. this should be looped 100 times a second
+            loops++;
+            if(loops >=50){ //run every half a second. this should be looped 100 times a second
                 printAnUpdate();
-                l = 0;
+                loops = 0;
             }
             pushToSmartDashboard();
         }else{
