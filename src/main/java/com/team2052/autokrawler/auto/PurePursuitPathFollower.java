@@ -37,6 +37,7 @@ public class PurePursuitPathFollower{
     private int closestPointIndex;
     private Position2d lookaheadPoint;
     private Position2d currentPos;
+    private boolean isForward;
 
     private boolean ranOutOfPath = false;
     private double curvature;
@@ -59,7 +60,7 @@ public class PurePursuitPathFollower{
             findDriveCurvature();
             driveWheels();
             loops++;
-            if(loops >=50){ //run every half a second. this should be looped 100 times a second
+            if(loops >=20){ //run every fifth a second. this should be looped 100 times a second
                 printAnUpdate();
                 loops = 0;
             }
@@ -75,10 +76,11 @@ public class PurePursuitPathFollower{
      * @see PathCreator
      * @param path is a path created in an automode class
      */
-    public void start(Path path) {
+    public void start(Path path, boolean isForward) {
+        this.isForward = isForward;
         resetPathFollower();
         System.out.println("creating path");
-        this.path = new Path(pathCreator.createPath(path.getWaypoints())); //more detailed path from smaller path
+        this.path = new Path(pathCreator.createPath(path.getWaypoints(), isForward)); //more detailed path from smaller path
         System.out.println("created path");
     }
 
@@ -188,6 +190,7 @@ public class PurePursuitPathFollower{
         highestVel = Math.max(highestVel,rightWheelVel);
         if(highestVel > Constants.Autonomous.kMaxVelocity){
             double scaling = Constants.Autonomous.kMaxVelocity / highestVel;
+            System.out.println("SCALING OUTPUTS DOWN");
             leftWheelVel*=scaling;
             rightWheelVel*=scaling;
         }
@@ -220,7 +223,10 @@ public class PurePursuitPathFollower{
 
     /**
      * Check if the robot is done with the path
-     * @return true if the robot is done with the path
+     * @return true if
+     * we are closer then the requiered distance,
+     * or we are off the path,
+     * or our closest point is after the end point
      */
     public boolean isPathComplete(){
         if(currentPos != null && path != null) {
@@ -245,7 +251,7 @@ public class PurePursuitPathFollower{
      * @return distance in inches from last point
      */
     private double getDistanceFromEnd(){
-        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 2).getPosition(), currentPos); //todo: make sure -2 is correct
+        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 3).getPosition(), currentPos); //todo: make sure -2 is correct
     }
 
     /**
@@ -256,6 +262,7 @@ public class PurePursuitPathFollower{
         SmartDashboard.putNumber("Curvature", curvature);
         SmartDashboard.putNumber("LeftWheelVel", leftWheelVel);
         SmartDashboard.putNumber("RightWheelVel", rightWheelVel);
+        SmartDashboard.putNumber("Av. robot vel", (rightWheelVel + leftWheelVel)/2);
     }
 
     /**

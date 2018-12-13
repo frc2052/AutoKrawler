@@ -8,9 +8,11 @@ public class FollowPathAction implements Action{
     private PurePursuitPathFollower pathFollower = PurePursuitPathFollower.getInstance();
 
     private Path path;
+    private Direction direction;
 
     public FollowPathAction(Path path, Direction direction){
         this.path = path;
+        this.direction = direction;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class FollowPathAction implements Action{
     @Override
     public void start() {
         System.out.println("starting auto");
-        pathFollower.start(path);
+        pathFollower.start(path, direction.isForward);
     }
 
     @Override
@@ -37,14 +39,14 @@ public class FollowPathAction implements Action{
     }
 
     public enum Direction{
-        FORWARD(false),
-        BACKWARD(true)
+        FORWARD(true),
+        BACKWARD(false)
         ;
 
-        public final boolean dir;
+        public final boolean isForward;
 
-        Direction(boolean dir){
-            this.dir = dir;
+        Direction(boolean isForward){
+            this.isForward = isForward;
         }
     }
 }

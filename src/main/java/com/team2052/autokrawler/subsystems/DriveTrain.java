@@ -83,7 +83,7 @@ public class DriveTrain {
     }
 
     public void driveTank(double left, double right){
-        System.out.println("Left Speed = " + left + " rightSpeed = " + right);
+        //System.out.println("Left Speed = " + left + " rightSpeed = " + right);
         leftMaster.set(ControlMode.PercentOutput, left);
         rightMaster.set(ControlMode.PercentOutput, right);
     }

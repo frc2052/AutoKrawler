@@ -19,6 +19,6 @@ public class FakeRobot {
         testPath.addWaypoint(new Waypoint(new Position2d(54,0), 25));
 
         PathCreator pathCreator = new PathCreator();
-        Path path = new Path(pathCreator.createPath(testPath.getWaypoints()));
+        Path path = new Path(pathCreator.createPath(testPath.getWaypoints(), true));
     }
 }

@@ -49,7 +49,7 @@ public class RobotState{
     }
 
     public void setVelocityInch(double deltaDistance){
-        velocityInch = deltaDistance / Constants.Autonomous.kloopPeriodSec;
+        velocityInch = deltaDistance / (Constants.Autonomous.kloopPeriodSec);
     }
 
     public void outputToSmartDashboard(){
@@ -57,6 +57,8 @@ public class RobotState{
         SmartDashboard.putNumber("Robot Pos Y", latestPosition.getForward());
         SmartDashboard.putNumber("Robot Pos Angle", latestPosition.getHeading());
         SmartDashboard.putNumber("Robot Velocity", velocityInch);
+        SmartDashboard.putNumber("Robot Right Vel inch", rightVelocityInch);
+        SmartDashboard.putNumber("Robot Left Vel inch", leftVelocityInch);
     }
 
     public void setTimeSinceReset(double timeSinceReset){

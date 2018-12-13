@@ -27,7 +27,7 @@ public class RobotStateCalculator implements ILoopable{
 
         deltaLeftInches = leftInches-pastLeftInches;
         deltaRightInches = rightInches-pastRightInches;
-        deltaDistance = ((deltaLeftInches) + (deltaRightInches)) / 2;
+        deltaDistance = (deltaLeftInches + deltaRightInches) / 2;
         double averageHeading = (radians + latestPosition.getHeading()) / 2;
         pastRightInches = rightInches;
         pastLeftInches = leftInches;

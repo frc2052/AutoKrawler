@@ -12,20 +12,22 @@ import java.util.List;
 public class PathCreator {
 
     List<Waypoint> pathPoints = new ArrayList<Waypoint>();
+    private boolean isForward;
 
     /**
      * create a path that can be followed from a path created in an automode class
      * @param wayPoints
      * @return a list of waypoints that is more populated and have distances, velocities and curvature set
      */
-    public List<Waypoint> createPath(List<Waypoint> wayPoints){
+    public List<Waypoint> createPath(List<Waypoint> wayPoints, boolean isForward){
 
+        this.isForward = isForward;
         //print origional points
         /*
         for(int i = 0; i < wayPoints.size(); i++){
             System.out.println("path points: x: " + wayPoints.get(i).getPosition().getLateral() + "y: " + wayPoints.get(i).getPosition().getForward());
         }*/
-        pathPoints = null;
+        pathPoints = new ArrayList<Waypoint>();
         addPoints(wayPoints);
         setDistances();
         setCurvature();
@@ -66,7 +68,7 @@ public class PathCreator {
             dir.x = wayPoints.get(i).getPosition().getLateral() - wayPoints.get(i-1).getPosition().getLateral(); //it should be the farthest minus the closest which is i - (i-1)
             dir.y = wayPoints.get(i).getPosition().getForward() - wayPoints.get(i-1).getPosition().getForward();
             double mag = dir.magnitude();
-            //System.out.println("Vector x: " + dir.x + "Vector y: " + dir.y);
+            //System.out.println("Vector x: " + isForward.x + "Vector y: " + isForward.y);
             int numOfPts = (int)(mag/Constants.Autonomous.kMinPointSpacing);
 
             if(numOfPts<1){
@@ -185,11 +187,12 @@ public class PathCreator {
             if (pathPoints.get(i).getCurvature() != 0){
                 //System.out.println("Curvature: " + pathPoints.get(i).getCurvature());
                 //System.out.println("MINIMUM OF: " + (Constants.Autonomous.kturnSpeed / pathPoints.get(i).getCurvature()) + " , " + pathPoints.get(i).getVelocity());
-                pathPoints.get(i).setVelocity(Math.min(Constants.Autonomous.kturnSpeed / pathPoints.get(i).getCurvature(), pathPoints.get(i).getVelocity()));
+                double vel = Math.min(Constants.Autonomous.kturnSpeed / pathPoints.get(i).getCurvature(), pathPoints.get(i).getVelocity());
+                pathPoints.get(i).setVelocity(isForward ? vel : -vel);
             }
 
-            if (pathPoints.get(i).getVelocity() > Constants.Autonomous.kMaxVelocity){
-                pathPoints.get(i).setVelocity(Constants.Autonomous.kMaxVelocity);
+            if (pathPoints.get(i).getVelocity() > Constants.Autonomous.kMaxVelocity || pathPoints.get(i).getVelocity() < -Constants.Autonomous.kMaxVelocity){
+                pathPoints.get(i).setVelocity(isForward ? Constants.Autonomous.kMaxVelocity : -Constants.Autonomous.kMaxVelocity);
             }
         }
     }
@@ -204,7 +207,8 @@ public class PathCreator {
         //i=4 because we extended the path by 2 points and we want size()-i to be equal to the second to last point
         for (int i = 4; i < pathPoints.size()+1; i++){
             double d = Position2d.distanceFormula(pathPoints.get(pathPoints.size()-i+1).getPosition(),pathPoints.get(pathPoints.size()-i).getPosition());
-            pathPoints.get(pathPoints.size()-i).setVelocity(Math.min(pathPoints.get(pathPoints.size()-i).getVelocity(), Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).getVelocity(),2) + 2 * Constants.Autonomous.kMaxAccel * d)));
+            double vel = Math.min(pathPoints.get(pathPoints.size()-i).getVelocity(), Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).getVelocity(),2) + 2 * Constants.Autonomous.kMaxAccel * d));
+            pathPoints.get(pathPoints.size()-i).setVelocity(isForward ? vel : -vel);
         }
     }
 
