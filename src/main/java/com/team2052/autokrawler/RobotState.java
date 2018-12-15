@@ -59,6 +59,7 @@ public class RobotState{
         SmartDashboard.putNumber("Robot Velocity", velocityInch);
         SmartDashboard.putNumber("Robot Right Vel inch", rightVelocityInch);
         SmartDashboard.putNumber("Robot Left Vel inch", leftVelocityInch);
+        SmartDashboard.putNumber("Robot Time", getTimeSinceReset());
     }
 
     public void setTimeSinceReset(double timeSinceReset){

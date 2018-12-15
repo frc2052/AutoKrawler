@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * this means the robot has a point on the path that is a set distance away from the center of the robot
  * that it will try to curve into.
  *
- * @see #start(Path)
+ * @see #start(Path, boolean)
  * @see #update()
  *
  * @author Ian
@@ -60,7 +60,7 @@ public class PurePursuitPathFollower{
             findDriveCurvature();
             driveWheels();
             loops++;
-            if(loops >=20){ //run every fifth a second. this should be looped 100 times a second
+            if(loops >=10){ //run every fifth a second. this should be looped 50 times a second
                 printAnUpdate();
                 loops = 0;
             }
@@ -177,8 +177,9 @@ public class PurePursuitPathFollower{
     /**
      * calculate the velocity in inches for the left and right wheels then turn it into percent
      */
-    private void driveWheels(){
-        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex).getVelocity() - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
+    private void driveWheels(){ //changed velocity to the closest+2
+        //if we are moving at higher velocitys, at the end look father ahead to stop
+        double deltaVelocity = rateLimiter.constrain(path.getWaypoints().get(closestPointIndex+((closestPointIndex >= path.getWaypoints().size()-5)?1:0)).getVelocity() - robotState.getVelocityInch(), -Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs, Constants.Autonomous.kMaxAccel * Constants.Autonomous.kloopPeriodMs);
         double velocity = robotState.getVelocityInch() +  deltaVelocity;
         leftWheelVel = velocity * (2 - curvature * Constants.Autonomous.kTrackWidth)/2;
         rightWheelVel = velocity * (2 + curvature * Constants.Autonomous.kTrackWidth)/2;
@@ -251,7 +252,7 @@ public class PurePursuitPathFollower{
      * @return distance in inches from last point
      */
     private double getDistanceFromEnd(){
-        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 3).getPosition(), currentPos); //todo: make sure -2 is correct
+        return Position2d.distanceFormula(path.getWaypoints().get(path.getWaypoints().size() - 4).getPosition(), currentPos); //todo: make sure -2 is correct
     }
 
     /**
@@ -260,9 +261,9 @@ public class PurePursuitPathFollower{
     private void pushToSmartDashboard(){
         SmartDashboard.putNumber("DistanceFromEnd", getDistanceFromEnd());
         SmartDashboard.putNumber("Curvature", curvature);
-        SmartDashboard.putNumber("LeftWheelVel", leftWheelVel);
-        SmartDashboard.putNumber("RightWheelVel", rightWheelVel);
-        SmartDashboard.putNumber("Av. robot vel", (rightWheelVel + leftWheelVel)/2);
+        SmartDashboard.putNumber("SetLeftVel", leftWheelVel);
+        SmartDashboard.putNumber("SetRightVel", rightWheelVel);
+        SmartDashboard.putNumber("SetRobotVel", (rightWheelVel + leftWheelVel)/2);
     }
 
     /**

@@ -17,6 +17,7 @@ public class RobotStateCalculator implements ILoopable{
 
     private double timeSinceReset = 0;
 
+    private double lastVels[] = new double[3];
     private DriveTrain driveTrain = DriveTrain.getInstance();
     private RobotState robotState = RobotState.getInstance();
 
@@ -31,6 +32,9 @@ public class RobotStateCalculator implements ILoopable{
         double averageHeading = (radians + latestPosition.getHeading()) / 2;
         pastRightInches = rightInches;
         pastLeftInches = leftInches;
+        lastVels[0] = lastVels[1];
+        lastVels[1] = lastVels[2];
+        lastVels[2] = deltaDistance;
 
         latestPosition.setForward(deltaDistance * Math.cos(averageHeading) + latestPosition.getForward());
         latestPosition.setLateral(deltaDistance * Math.sin(averageHeading) + latestPosition.getLateral());
@@ -48,17 +52,18 @@ public class RobotStateCalculator implements ILoopable{
         driveTrain.resetEncoders();
         pastLeftInches = 0;
         pastRightInches = 0;
+        timeSinceReset = 0;
 
     }
 
     @Override
     public void update() {
         estimatePositionAverageHeading((driveTrain.getLeftEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches, (driveTrain.getRightEncoder() / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches, driveTrain.getGyroAngleRadians());
-        robotState.setVelocityInch(deltaDistance);
+        robotState.setVelocityInch((lastVels[0] + lastVels[1] + lastVels[2])/3);
         robotState.setLeftVelocityInch(deltaLeftInches);
         robotState.setRightVelocityInch(deltaRightInches);
         robotState.setLatestPosition(latestPosition);
-        timeSinceReset+= 0.01; //todo: test if accurate
+        timeSinceReset+= Constants.Autonomous.kloopPeriodSec; //todo: test if accurate
         robotState.setTimeSinceReset(timeSinceReset);
     }
 

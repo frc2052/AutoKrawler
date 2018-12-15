@@ -17,6 +17,7 @@ public class AutoModeSelector {
                 switch (AutoModeDefinition.values()[i]) { //this is to make sure test or failure autos cannot be choosen during compititions
                     case DONT_MOVE:
                     case TEST:
+                    case TEST2:
                     default:
                         sendableChooserAutoMode.addObject(mode.name, mode);
                 }
@@ -39,7 +40,8 @@ public class AutoModeSelector {
     public enum AutoModeDefinition
     {
         DONT_MOVE("Don't Move", DontMove.class),
-        TEST("Test", Test.class)
+        TEST("Test", Test.class),
+        TEST2("Test2", Test2.class)
         ;
 
         //create a class variable type and check if it extends AutoMode. the name of this variable is clazz
