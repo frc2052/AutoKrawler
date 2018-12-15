@@ -108,6 +108,10 @@ public class DriveTrain {
         return rightMaster.getSelectedSensorPosition(0);
     }
 
+    public double getLeftVelocity(){
+        return (leftMaster.getSelectedSensorVelocity(0) / Constants.DriveTrain.kkTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches * 10;
+    }
+
     public void resetEncoders(){
         leftMaster.setSelectedSensorPosition(0, Constants.DriveTrain.kVelocityControlSlot, Constants.DriveTrain.kCANBusConfigTimeoutMS);
         rightMaster.setSelectedSensorPosition(0, Constants.DriveTrain.kVelocityControlSlot, Constants.DriveTrain.kCANBusConfigTimeoutMS);

@@ -8,6 +8,7 @@ import com.team2052.autokrawler.subsystems.DriveTrain;
 import com.team2052.lib.Autonomous.Path;
 import com.team2052.lib.ControlLoop;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 
@@ -83,7 +84,7 @@ public class Robot extends IterativeRobot {
             driveTrain.zeroGyro();
             robotStateCalculator.resetRobotState();
         }
-
+        SmartDashboard.putNumber("TALON LEFT VEL", driveTrain.getLeftVelocity());
 
         robotstate.outputToSmartDashboard();
     }
