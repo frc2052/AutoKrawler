@@ -5,7 +5,7 @@ import com.team2052.autokrawler.auto.AutoModeRunner;
 import com.team2052.autokrawler.auto.AutoModeSelector;
 import com.team2052.autokrawler.auto.PurePursuitPathFollower;
 import com.team2052.autokrawler.subsystems.DriveTrain;
-import com.team2052.lib.Autonomous.Path;
+import com.team2052.autokrawler.auto.paths.Path;
 import com.team2052.lib.ControlLoop;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

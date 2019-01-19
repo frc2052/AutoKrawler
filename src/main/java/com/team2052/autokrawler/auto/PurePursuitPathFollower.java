@@ -3,7 +3,7 @@ package com.team2052.autokrawler.auto;
 import com.team2052.autokrawler.Constants;
 import com.team2052.autokrawler.RobotState;
 import com.team2052.autokrawler.subsystems.DriveTrain;
-import com.team2052.lib.Autonomous.Path;
+import com.team2052.autokrawler.auto.paths.Path;
 import com.team2052.lib.Autonomous.Position2d;
 import com.team2052.lib.Autonomous.RateLimiter;
 import edu.wpi.first.wpilibj.drive.Vector2d;
@@ -30,7 +30,6 @@ public class PurePursuitPathFollower{
     private Path path;
 
     private RateLimiter rateLimiter = new RateLimiter();
-    private PathCreator pathCreator = new PathCreator();
     private DriveTrain driveTrain = DriveTrain.getInstance();
     private RobotState robotState = RobotState.getInstance();
 
@@ -73,15 +72,11 @@ public class PurePursuitPathFollower{
     /**
      * Start takes a path and runs it through the path creator class to set it up for following
      * @see #resetPathFollower()
-     * @see PathCreator
      * @param path is a path created in an automode class
      */
-    public void start(Path path, boolean isForward) {
-        this.isForward = isForward;
+    public void start(Path path) {
+        this.path = path;
         resetPathFollower();
-        System.out.println("creating path");
-        this.path = new Path(pathCreator.createPath(path.getWaypoints(), isForward)); //more detailed path from smaller path
-        System.out.println("created path");
     }
 
     /**
