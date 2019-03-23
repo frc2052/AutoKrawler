@@ -1,4 +1,7 @@
-Java
----
+This is the base code for all knightkrawler robot code. This code was built with intelliJ, and does not use the command based programming framwork.
 
-This example involves building and deploying Java sources. This should be all you need to get started, however there are plenty of resources online for building more advanced java projects should you require.
+This code includes:
+  * An Autonomous Framework
+  * PurePersuitPathFollowing
+  * Position detection
+  * Subsystem code
