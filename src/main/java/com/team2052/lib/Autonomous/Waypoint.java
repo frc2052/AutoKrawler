@@ -9,6 +9,7 @@ public class Waypoint {
     private double velocity;
     private double curvature; //1/radius of circle created by point ahead and behind
     private double distance;
+    private String flag;
 
     /**
      * @param position in inches
@@ -19,6 +20,15 @@ public class Waypoint {
         this.velocity = velocity;
         distance = 0;
         curvature = 0;
+        flag = "";
+    }
+
+    public Waypoint(Position2d position, double velocity, String flag) {
+        this.position = position;
+        this.velocity = velocity;
+        distance = 0;
+        curvature = 0;
+        this.flag = flag;
     }
 
     public Position2d getPosition() {
@@ -52,5 +62,7 @@ public class Waypoint {
     public void setDistance(double distance) {
         this.distance = distance;
     }
+
+    public String getFlag(){ return flag; }
 }
 

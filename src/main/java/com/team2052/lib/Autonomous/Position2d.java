@@ -120,4 +120,18 @@ public class Position2d {
     public static double distanceFormula(Position2d first, Position2d second){
         return Math.sqrt(Math.pow(second.lateral - first.lateral,2) + Math.pow(second.forward - first.forward,2));
     }
+
+    @Override
+    public String toString() {
+        return "(f/y: " + forward + " , l/x: " + lateral;
+    }
+
+    public Position2d getClone(){
+        Position2d clone = new Position2d();
+        clone.setForward(this.getForward());
+        clone.setLateral(this.getLateral());
+        clone.setHeading(this.getHeading());
+        return clone;
+
+    }
 }
