@@ -41,6 +41,7 @@ public abstract class Path {
 
     public abstract List<Waypoint> getWaypoints();
 
+    public void changeEndPos(double val){};
     /**
      * create a path that can be followed from a path created in an automode class
      *  a list of wayPoints that is more populated and have distances, velocities and curvature set
@@ -57,7 +58,7 @@ public abstract class Path {
             //print origional points
         /*
         for(int i = 0; i < wayPoints.size(); i++){
-            System.out.println("path points: x: " + wayPoints.get(i).getPosition().getLateral() + "y: " + wayPoints.get(i).getPosition().getForward());
+            System.out.println("path points: x: " + wayPoints.get(i).getPosition().getY() + "y: " + wayPoints.get(i).getPosition().getX());
         }*/
             //set the final point to 0 calculateDeceleration
             wayPoints.get(wayPoints.size() - 1).setVelocity(0); //todo test this end speed
@@ -88,11 +89,11 @@ public abstract class Path {
                 dir.x = (dir.x / mag) * (mag / numOfPts);
                 dir.y = (dir.y / mag) * (mag / numOfPts);
 
-                //System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).getPosition().getLateral() + "y: " + pathPoints.get(pathPoints.size()-1).getPosition().getForward());
+                //System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).getPosition().getY() + "y: " + pathPoints.get(pathPoints.size()-1).getPosition().getX());
                 for (int j = 0; j < numOfPts; j++) {
 
                     pathPoints.add(pathPoints.size(), new Waypoint(pathPoints.get(pathPoints.size() - 1).getPosition().translateBy(new Position2d(dir.y, dir.x)), wayPoints.get(i - 1).getVelocity(), wayPoints.get(i-1).getFlag()));
-//                    System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).getPosition().getLateral() + "y: " + pathPoints.get(pathPoints.size()-1).getPosition().getForward() + " vel: " + wayPoints.get(i-1).getVelocity());
+//                    System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).getPosition().getY() + "y: " + pathPoints.get(pathPoints.size()-1).getPosition().getX() + " vel: " + wayPoints.get(i-1).getVelocity());
                 }
             }
         }
@@ -235,7 +236,7 @@ public abstract class Path {
         //print the final points
 
 //        for(int i = 0; i < pathPoints.size(); i++){
-//            System.out.println("path points: x: " + pathPoints.get(i).getPosition().getLateral() + "y: " + pathPoints.get(i).getPosition().getForward() + " vel: " + pathPoints.get(i).getVelocity());
+//            System.out.println("path points: x: " + pathPoints.get(i).getPosition().getY() + "y: " + pathPoints.get(i).getPosition().getX() + " vel: " + pathPoints.get(i).getVelocity());
 //        }
 
         pushPathToSmartDashboard(pathPoints);
@@ -264,6 +265,95 @@ public abstract class Path {
             vels[i] = waypoints.get(i).getVelocity();
         }
         SmartDashboard.putNumberArray("Path Vel's", vels);
+    }
+
+    /**
+     * ONLY FOR VISIONING WITH PNP
+     * DO NOT USE FOR NORMAL PATHS
+     */
+    protected void forceQuickOptimization(){
+
+        List<Waypoint> pathPoints = new ArrayList<Waypoint>();
+        /*addPoints
+         * First extend the path based on the lookahead distance
+         * then add points between the original points that are less then 6 inches away from each other
+         */
+        {
+
+            //print origional points
+        /*
+        for(int i = 0; i < wayPoints.size(); i++){
+            System.out.println("path points: x: " + wayPoints.get(i).getPosition().getY() + "y: " + wayPoints.get(i).getPosition().getX());
+        }*/
+            //set the final point to 0 calculateDeceleration
+            wayPoints.get(wayPoints.size() - 1).setVelocity(0); //todo test this end speed
+
+            //extend path 1.5 lookahead distance away
+            Vector2d finalDir = new Vector2d();
+            finalDir.x = wayPoints.get(wayPoints.size() - 1).getPosition().getLateral() - wayPoints.get(wayPoints.size() - 2).getPosition().getLateral();
+            finalDir.y = wayPoints.get(wayPoints.size() - 1).getPosition().getForward() - wayPoints.get(wayPoints.size() - 2).getPosition().getForward();
+            double finMag = finalDir.magnitude();
+            finalDir.x = (finalDir.x / finMag) * Constants.Autonomous.kLookaheadDistance * 1.5;
+            finalDir.y = (finalDir.y / finMag) * Constants.Autonomous.kLookaheadDistance * 1.5;
+
+            wayPoints.add(wayPoints.size(), new Waypoint(new Position2d(wayPoints.get(wayPoints.size() - 1).getPosition().getForward() + finalDir.y, wayPoints.get(wayPoints.size() - 1).getPosition().getLateral() + finalDir.x), 0));
+
+            //create more points
+            pathPoints.add(pathPoints.size(), wayPoints.get(0));
+            for (int i = 1; i < wayPoints.size(); i++) {
+                Vector2d dir = new Vector2d();
+                dir.x = wayPoints.get(i).getPosition().getLateral() - wayPoints.get(i - 1).getPosition().getLateral(); //it should be the farthest minus the closest which is i - (i-1)
+                dir.y = wayPoints.get(i).getPosition().getForward() - wayPoints.get(i - 1).getPosition().getForward();
+                double mag = dir.magnitude();
+                //System.out.println("Vector x: " + isForward.x + "Vector y: " + isForward.y);
+                int numOfPts = (int) (mag / Constants.Autonomous.kMinPointSpacing);
+
+                if (numOfPts < 1) {
+                    numOfPts = 1;
+                }
+                dir.x = (dir.x / mag) * (mag / numOfPts);
+                dir.y = (dir.y / mag) * (mag / numOfPts);
+
+                //System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).getPosition().getY() + "y: " + pathPoints.get(pathPoints.size()-1).getPosition().getX());
+                for (int j = 0; j < numOfPts; j++) {
+
+                    pathPoints.add(pathPoints.size(), new Waypoint(pathPoints.get(pathPoints.size() - 1).getPosition().translateBy(new Position2d(dir.y, dir.x)), wayPoints.get(i - 1).getVelocity(), wayPoints.get(i-1).getFlag()));
+//                    System.out.println("added point: x: " + pathPoints.get(pathPoints.size()-1).getPosition().getY() + "y: " + pathPoints.get(pathPoints.size()-1).getPosition().getX() + " vel: " + wayPoints.get(i-1).getVelocity());
+                }
+            }
+        }
+
+        /*Add distances
+         * set each point an estimate to how far they are along the path
+         */
+        {
+            for (int i = 1; i < pathPoints.size(); i++) {
+                double segmentDistance = Position2d.distanceFormula(pathPoints.get(i - 1).getPosition(), pathPoints.get(i).getPosition());
+                pathPoints.get(i).setDistance(pathPoints.get(i - 1).getDistance() + segmentDistance);
+            }
+
+            {
+                pathPoints.get(pathPoints.size()-3).setVelocity(0);
+
+                //i=4 because we extended the path by 2 points and we want size()-i to be equal to the second to last point
+                for (int i = 4; i < pathPoints.size()+1; i++){
+                    double d = Position2d.distanceFormula(pathPoints.get(pathPoints.size()-i+1).getPosition(),pathPoints.get(pathPoints.size()-i).getPosition());
+                    double vel = Math.min(pathPoints.get(pathPoints.size()-i).getVelocity(), Math.sqrt(Math.pow(pathPoints.get(pathPoints.size()-i+1).getVelocity(),2) + 2 * (Constants.Autonomous.kMaxAccel) * d)); //todo: accel is devided by 4 to start slowing down the robot faster
+                    pathPoints.get(pathPoints.size()-i).setVelocity(isForward ? vel : -vel); //todo: remove turnerary statements
+                }
+            }
+
+            wayPoints = pathPoints;
+        }
+
+        /*
+         *set curvature
+         */
+        {
+            for (Waypoint pathPoint : pathPoints) {
+                pathPoint.setCurvature(0);
+            }
+        }
     }
 
     public enum Direction{

@@ -9,6 +9,7 @@ import com.team2052.lib.ControlLoop;
 import com.team2052.lib.DriveHelper;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,16 +28,12 @@ public class Robot extends TimedRobot {
     private ControlLoop controlLoop = new ControlLoop(Constants.Autonomous.kloopPeriodSec);
     private Compressor compressor = null;
 
-
-
     @Override
     public void robotInit() {
         driveHelper = new DriveHelper();
         controls = Controls.getInstance();
         driveTrain = DriveTrainController.getInstance();
-        //add the calculator to the control loop
         controlLoop.addLoopable(robotStateCalculator);
-
         autoModeRunner = AutoModeRunner.getInstance();
         try {
             compressor = new Compressor();
@@ -67,7 +64,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        //start the control loop
         controlLoop.start();
         driveTrain.zeroGyro();
 
@@ -92,6 +88,7 @@ public class Robot extends TimedRobot {
         if(controls.getAutoOverride()){
             autoModeRunner.stop();
             driveTrain.stop();
+            System.out.println("WHAT THE FUCK AUTO IS DONE");
         }
         //System.out.println("is auto done: " + autoModeRunner.isFinished());
 
@@ -131,7 +128,7 @@ public class Robot extends TimedRobot {
         autoModeRunner.stop();
         controlLoop.stop();
         driveTrain.stop();
-        AutoModeSelector.checkSelectedAutoMode();
+        AutoModeSelector.getSelectedAutoMode();
         PurePursuitPathFollower.getInstance().resetPathFollower();
     }
 
@@ -140,5 +137,6 @@ public class Robot extends TimedRobot {
         driveTrain.drive(driveHelper.drive(controls.getDriveTank(), controls.getDriveTurn(), controls.getQuickTurn()));
         robotstate.outputToSmartDashboard();
         driveTrain.setHighGear(controls.getShift());
+
     }
 }

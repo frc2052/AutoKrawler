@@ -1,10 +1,6 @@
 package com.team2052.deepspace.auto.actions;
 import com.team2052.deepspace.auto.PurePursuitPathFollower;
 
-/**
- * This action will wait until the robot hits the point with the flag.
- *
- */
 public class WaitForPathFlagAction implements Action{
 
     private PurePursuitPathFollower purePursuitPathFollower = null;

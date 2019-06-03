@@ -5,7 +5,7 @@ import com.team2052.lib.Autonomous.Waypoint;
 
 import java.util.List;
 
-public class ExamplePath extends Path{
+public class ExamplePath extends Path {
 
     public ExamplePath() {
         setDirection(Direction.FORWARD);

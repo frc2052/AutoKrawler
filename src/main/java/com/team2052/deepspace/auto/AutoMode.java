@@ -1,7 +1,8 @@
 package com.team2052.deepspace.auto;
 
 import com.team2052.deepspace.Constants;
-import com.team2052.deepspace.auto.actions.*;
+import com.team2052.deepspace.auto.actions.Action;
+import com.team2052.deepspace.auto.actions.SeriesAction;
 import com.team2052.lib.Autonomous.Position2d;
 
 import java.util.Arrays;

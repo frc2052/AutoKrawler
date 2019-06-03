@@ -1,6 +1,5 @@
 package com.team2052.deepspace.auto;
 
-import com.team2052.deepspace.auto.actions.SeriesAction;
 import edu.wpi.first.wpilibj.Timer;
 
 

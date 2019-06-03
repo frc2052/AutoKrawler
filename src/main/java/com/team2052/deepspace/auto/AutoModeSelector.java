@@ -2,8 +2,8 @@ package com.team2052.deepspace.auto;
 
 import com.team2052.deepspace.Constants;
 import com.team2052.deepspace.auto.modes.DontMove;
-import com.team2052.deepspace.auto.modes.examples.BackwardStartCenter;
-import com.team2052.deepspace.auto.modes.examples.ForwardStartCenter;
+import com.team2052.deepspace.auto.modes.Test;
+import com.team2052.deepspace.auto.modes.WaitToStart;
 import com.team2052.lib.Autonomous.Position2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,6 +47,7 @@ public class AutoModeSelector {
         SmartDashboard.putData("Start Position", sendableChooserPosition);
         SmartDashboard.putData("First Target", sendableChooserFirstTarget);
         SmartDashboard.putData("Second Target", sendableChooserSecondTarget);
+        SmartDashboard.putBoolean("Wait To Start?", waitForStart);
     }
 
     private static PositionSelection lastPosition = null;
@@ -54,14 +55,10 @@ public class AutoModeSelector {
     private static SecondTargetSelection lastSecond = null;
     private static AutoMode selectedAuto = null;
     private static AutoMode secondAuto  = null;
-
-    public static void checkSelectedAutoMode(){
-        //this method also updates smartdashboard
-        getSelectedAutoMode();
-    }
+    private static boolean waitForStart = false;
 
     public static AutoMode getSelectedAutoMode() {
-
+        waitForStart = SmartDashboard.getBoolean("Wait To Start?", false);
         PositionSelection position = sendableChooserPosition.getSelected();
         FirstTargetSelection first = sendableChooserFirstTarget.getSelected();
         SecondTargetSelection second = sendableChooserSecondTarget.getSelected();
@@ -84,157 +81,97 @@ public class AutoModeSelector {
             lastSecond = second;
             //System.out.println("pos: "+ lastPosition.name + " " + lastPosition + " first: " + lastFirst.name + " " + lastFirst);
             switch (position) {
+                case TEST:
+                    System.out.println("selected test");
+                    selectedAuto = new Test(position.startPos);
+                    secondAuto = new DontMove();
+                    break;
                 case LEFT:
                 case LEFTHAB2:
                     switch (first) {
-
-                        /*
-                        case BCLHATCH:
-                            selectedAuto = new BackwardLeftToCenterLeft(position.startPos);
-                            break;
-                        case BLCHATCH:
-                            selectedAuto = new BackwardLeftToLeftClose(position.startPos);
-                            break;
-                        case BLMHATCH:
-                            selectedAuto = new BackwardLeftToLeftMiddle(position.startPos);
-                            break;
-                        case BLFHATCH:
-                            selectedAuto = new BackwardLeftToLeftFar(position.startPos);
-                            break;
-
-                        case FCLHATCH:
-                            selectedAuto = new ForwardLeftToCenterLeft(position.startPos);
-                            break;
-                        case FLCHATCH:
-                            selectedAuto = new ForwardLeftToLeftClose(position.startPos);
-                            break;
-                        case FLMHATCH:
-                            selectedAuto = new ForwardLeftToLeftMiddle(position.startPos);
-                            break;
-                        case FLFHATCH:
-                            selectedAuto = new ForwardLeftToLeftFar(position.startPos);
-                            break;
-                        case FLSRCHATCH:
-                            selectedAuto = new ForwardLeftToRocketClose(position.startPos);
-                            break;
-                        case BLSRFHATCH: // does notwork
-                            selectedAuto = new BackwardLeftToRocketFar(position.startPos);
-                            break;
-                        default:
-                            selectedAuto = null;
-                            */
-                    }
-
-                    switch (second){
-                        /*case BACKUP:
-                            secondAuto = new LeftSecondHatchBackUp(position.startPos);
-                            break;
-                        case LHATCH:
-                            secondAuto = new LeftSecondHatchCenterLeft(position.startPos);
-                            break;
-                        case LCHATCH:
-                            secondAuto = new LeftSecondHatchLeftClose(position.startPos);
-                            break;
-                        case LMHATCH:
-                            secondAuto = new LeftSecondHatchLeftMiddle(position.startPos);
-                            break;
-                        case LFHATCH:
-                                secondAuto = null;
-                            break;
                         case NONE:
                             secondAuto = new DontMove();
                             break;
                         default:
+                            selectedAuto = null;
+                    }
+
+                    switch (second){
+
+                        case NONE:
+                            secondAuto = new DontMove();
+                            break;
+
+                        default:
                             secondAuto = null;
                             break;
-                            */
                     }
                     break;
                 case RIGHT:
                 case RIGHTHAB2:
                     switch (first) {
-                        /*
-                        case BCRHATCH:
-                            selectedAuto = new BackwardCenterToCenterRight(position.startPos);
-                            break;
-                        case BRMHATCH:
-                            selectedAuto = new BackwardRightToRightMiddle(position.startPos);
-                            break;
-                        case BRFHATCH:
-                            selectedAuto = new BackwardRightToRightFar(position.startPos);
-                            break;
-                        case BRCHATCH:
-                            selectedAuto = new BackwardRightToRightClose(position.startPos);
-                            break;
-
-                        case FCRHATCH:
-                            selectedAuto = new ForwardRightToCenterRight(position.startPos);
-                            break;
-                        case FRMHATCH:
-                            selectedAuto = new ForwardRightToRightMiddle(position.startPos);
-                            break;
-                        case FRFHATCH:
-                            selectedAuto = new ForwardRightToRightFar(position.startPos);
-                            break;
-                        case FRCHATCH:
-                            selectedAuto = new ForwardRightToRightClose(position.startPos);
+                        case NONE:
+                            secondAuto = new DontMove();
                             break;
                         default:
                             selectedAuto = null;
-                            */
                     }
 
                     switch (second){
-                       /* case BACKUP:
-                            secondAuto = new RightSecondHatchBackUp(position.startPos);
-                            break;
-                        case RHATCH:
-                            secondAuto = new RightSecondHatchCenterRight(position.startPos);
-                            break;
-                        case RCHATCH:
-                            secondAuto = new RightSecondHatchRightClose(position.startPos);
-                            break;
-                        case RMHATCH:
-                            secondAuto = new RightSecondHatchRightMiddle(position.startPos);
-                            break;
-                        case RFHATCH:
-                            secondAuto = null;
-                            break;
                         case NONE:
                             secondAuto = new DontMove();
                             break;
                         default:
                             secondAuto = null;
                             break;
-                            */
                     }
 
                     break;
                 case CENTER:
                     switch (first) {
-                        case FORWARD:
-                            selectedAuto = new ForwardStartCenter(position.startPos);
-                            break;
-                        case BACKWARD:
-                            selectedAuto = new BackwardStartCenter(position.startPos);
-                            break;
-                        /*
-                        case BCLHATCH:
-                            selectedAuto = new BackwardStartCenter(position.startPos);
-                            break;
-                        case BCRHATCH:
-                            selectedAuto = new BackwardStartCenter(position.startPos);
-                            break;
-
-                        case FCLHATCH:
-                            selectedAuto = new ForwardCanterToCenterLeft(position.startPos);
-                            break;
-                        case FCRHATCH:
-                            selectedAuto = new ForwardStartCenter(position.startPos);
+                        case NONE:
+                            secondAuto = new DontMove();
                             break;
                         default:
                             selectedAuto = null;
-                            */
+                    }
+
+                    switch (second){
+                        case NONE:
+                            secondAuto = new DontMove();
+                            break;
+                        default:
+                            secondAuto = null;
+                            break;
+                    }
+                    break;
+                case CENTERLEFT:
+                    switch (first) {
+                        case NONE:
+                            secondAuto = new DontMove();
+                            break;
+                        default:
+                            secondAuto = null;
+                            break;
+                    }
+
+                    switch (second){
+                        case NONE:
+                            secondAuto = new DontMove();
+                            break;
+                        default:
+                            secondAuto = null;
+                            break;
+                    }
+                    break;
+                case CENTERRIGHT:
+                    switch (first){
+                        case NONE:
+                            secondAuto = new DontMove();
+                            break;
+                        default:
+                            secondAuto = null;
+                            break;
                     }
 
                     switch (second){
@@ -247,6 +184,14 @@ public class AutoModeSelector {
                     }
                     break;
                 case NONE:
+                    switch (first){
+                        case NONE:
+                            selectedAuto = new DontMove();
+                            break;
+                        default:
+                            selectedAuto = null;
+                    }
+
                 default:
                     selectedAuto = null; //set null because we check if its null on line for smart dashboard
             }
@@ -255,8 +200,16 @@ public class AutoModeSelector {
                 selectedAuto.init();
                 System.out.println("INITING SECOND: "+secondAuto.getClass().getSimpleName());
                 secondAuto.init();
-                selectedAuto.appendAction(secondAuto.getAction());
 
+                if(waitForStart){
+                    AutoMode delayStart = new WaitToStart(position.startPos);
+                    delayStart.init();
+                    delayStart.appendAction(selectedAuto.getAction());
+                    delayStart.appendAction(secondAuto.getAction());
+                    selectedAuto = delayStart;
+                }else {
+                    selectedAuto.appendAction(secondAuto.getAction());
+                }
             }
         }
 
@@ -276,12 +229,14 @@ public class AutoModeSelector {
 
     public enum PositionSelection {
         NONE("Select Start", new Position2d(0, 0)),
-        LEFT("StartLeft", new Position2d(0, Constants.Autonomous.kStartLeftInchOffset)),
         CENTER("StartCenter", new Position2d(0, 0)),
-        RIGHT("StartRight", new Position2d(0, Constants.Autonomous.kStartRightInchOffset)),
+        CENTERLEFT("StartCenterLeft", new Position2d(0,-10)),
+        CENTERRIGHT("StartCenterRight", new Position2d(0,10)),
+        LEFT("StartLeft", new Position2d(0, Constants.Autonomous.kStartLeftInchOffset)),
         LEFTHAB2("startLeftHab2", new Position2d(Constants.Autonomous.kStartHab2Offset, Constants.Autonomous.kStartLeftInchOffset)),
+        RIGHT("StartRight", new Position2d(0, Constants.Autonomous.kStartRightInchOffset)),
         RIGHTHAB2("startRightHab2", new Position2d(Constants.Autonomous.kStartHab2Offset, Constants.Autonomous.kStartRightInchOffset)),
-        TEST("test", new Position2d(0, 0));
+        TEST("test", new Position2d(0, -10));
 
         public String name;
         public Position2d startPos;
@@ -293,28 +248,26 @@ public class AutoModeSelector {
     }
 
     public enum FirstTargetSelection {
-
         NONE("Select Target One"),
-        FORWARD("Forward Example"),
-        BACKWARD("BackwardExample");
-        /*
         FCLHATCH("ForwardCenterLeftHatch"),
         FCRHATCH("ForwardCenterRightHatch"),
         FLCHATCH("ForwardLeftCloseHatch"),
-        FLMHATCH("ForwardLeftMiddleHatch"),
-        FLFHATCH("ForwardLeftFarHatch"),
-        FRCHATCH("ForwardRightCloseHatch"),
-        FRMHATCH("ForwardRightMiddleHatch"),
-        FRFHATCH("ForwardRightFarHatch"),
-        FLSRCHATCH("ForwardLeftRocketClose"),
-        BLSRFHATCH("BackwardLeftRocketFar");
+        //FLMHATCH("ForwardLeftMiddleHatch"),
+        //FLFHATCH("ForwardLeftFarHatch"),
+        FRCHATCH("ForwardRightCloseHatch");
+        //FRMHATCH("ForwardRightMiddleHatch"),
+        //FRFHATCH("ForwardRightFarHatch"),
+        //FLSRCHATCH("ForwardLeftRocketClose"),
+        //BLSRFHATCH("BackwardLeftRocketFar"),
 
-        BCLHATCH("BackCenterLeftHatch"),
-        BLCHATCH("BackLeftCloseHatch"),
+        //BCLHATCH("BackCenterLeftHatch"),
+        //BLCHATCH("BackLeftCloseHatch"),
+        //BCRHATCH("BackCenterRightHatch"),
+        //BRCHATCH("BackRightCloseHatch");
+            /*
         BLMHATCH("BackLeftMiddleHatch"),
         BLFHATCH("BackLeftFarHatch"),
-        BCRHATCH("BackCenterRightHatch"),
-        BRCHATCH("BackRightCloseHatch"),
+
         BRMHATCH("BackRightMiddleHatch"),
         BRFHATCH("BackRightFarHatch")*/
 
@@ -331,8 +284,8 @@ public class AutoModeSelector {
         BACKUP("Backup"),
         LHATCH("CenterLeftHatch"),
         RHATCH("CenterRightHatch"),
-        LFHATCH("LeftFarHatch"),
-        RFHATCH("RightFarHatch"),
+        //LFHATCH("LeftFarHatch"),
+        //FHATCH("RightFarHatch"),
         LMHATCH("LeftMiddleHatch"),
         RMHATCH("RightMiddleHatch"),
         LCHATCH("LeftCloseHatch"),

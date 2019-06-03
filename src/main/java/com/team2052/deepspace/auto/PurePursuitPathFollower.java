@@ -29,6 +29,9 @@ public class PurePursuitPathFollower{
     }
 
     private Path path;
+    private Path overridePath;
+    private boolean pathOveridden = false;
+    private boolean visionPathing = false;
 
     private RateLimiter rateLimiter = new RateLimiter();
     private DriveTrainController driveTrain = DriveTrainController.getInstance();
@@ -53,6 +56,11 @@ public class PurePursuitPathFollower{
      */
     public void update() {
         if (path != null) {
+            if(pathOveridden){
+                path = overridePath;
+                closestPointIndex = 0;
+                pathOveridden = false;
+            }
             driveTrain.setHighGear(path.getIsHighGear());
             currentPos = robotState.getLatestPosition();
             updateClosestPointIndex();
@@ -91,6 +99,14 @@ public class PurePursuitPathFollower{
         currentPos = null;
         curvature = 0;
         closestPointIndex = 0;
+        visionPathing = false;
+    }
+
+    public void OverrideCurrentPath(Path path){
+        overridePath = path;
+        pathOveridden =true;
+        visionPathing = true;
+        System.out.println("OVERRIDING PATH");
     }
 
     /**
@@ -140,7 +156,9 @@ public class PurePursuitPathFollower{
 
             if (discriminent < 0){
                 System.out.println("NO INTERSECTION" + closestPointIndex + " " + path.getWaypoints().get(closestPointIndex).getPosition().getForward() + " " + path.getWaypoints().get(closestPointIndex).getPosition().getLateral());
-                ranOutOfPath = true;
+                if(!visionPathing) {
+                    ranOutOfPath = true;
+                }
             }else{
                 discriminent = Math.sqrt(discriminent);
                 double t1 = (-b - discriminent)/(2*a);

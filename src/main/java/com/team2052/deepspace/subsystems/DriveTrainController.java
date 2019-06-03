@@ -111,10 +111,10 @@ public class DriveTrainController {
     public void driveAutoVelocityControl(double leftVel, double rightVel){
         //in/sec * rot/in * ticks/rot * .1 to get ticks/100ms
         System.out.println("Left Vel = " + leftVel + " right Vel = " + rightVel);
-        leftMaster.set(ControlMode.Velocity, ((leftVel * Constants.DriveTrain.kTicksPerRot)/Constants.DriveTrain.kDriveWheelCircumferenceInches)/3);
-        rightMaster.set(ControlMode.Velocity, ((rightVel * Constants.DriveTrain.kTicksPerRot)/Constants.DriveTrain.kDriveWheelCircumferenceInches)/3);
+        leftMaster.set(ControlMode.Velocity, ((leftVel * Constants.DriveTrain.kTicksPerRot)/ Constants.DriveTrain.kDriveWheelCircumferenceInches)/3);
+        rightMaster.set(ControlMode.Velocity, ((rightVel * Constants.DriveTrain.kTicksPerRot)/ Constants.DriveTrain.kDriveWheelCircumferenceInches)/3);
 
-        System.out.println("SENSOR VEL:" + leftMaster.getSelectedSensorVelocity() * (1.0/Constants.DriveTrain.kTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches * 10);
+        System.out.println("SENSOR VEL:" + leftMaster.getSelectedSensorVelocity() * (1.0/ Constants.DriveTrain.kTicksPerRot) * Constants.DriveTrain.kDriveWheelCircumferenceInches * 10);
 
 
     }
